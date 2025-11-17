@@ -1,0 +1,60 @@
+{
+  "dependencies": [
+    {
+      "name": "Json2Object",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "SideWinder",
+      "type": "git",
+      "dir": null,
+      "ref": "c5d5eb2e090c29d893bddf3adf6f06d692cd5929",
+      "url": "https://github.com/Falagard/SideWinder"
+    },
+    {
+      "name": "SideWinderDeployShared",
+      "type": "git",
+      "dir": null,
+      "ref": "0edfc28cdf50693bcfb4b5fdd040f3bebbcd109c",
+      "url": "https://github.com/Falagard/SideWinderDeployShared"
+    },
+    {
+      "name": "actuate",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "haxe-injection",
+      "type": "git",
+      "dir": null,
+      "ref": "7bb93913446ce60cacac1fb695038d8c204aec0f",
+      "url": "https://github.com/paulsgcross/haxe-injection"
+    },
+    {
+      "name": "haxeui-core",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "haxeui-html5",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "haxeui-openfl",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "lime",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "openfl",
+      "type": "haxelib",
+      "version": null
+    }
+  ]
+}
