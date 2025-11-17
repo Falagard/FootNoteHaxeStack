@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 
-	<meta title="SideWinderDeploy" package="io.sidewinder.sidewinderdeploy" version="1.0.0" company="SideWinder" />
-	<app main="Main" path="Export" file="SideWinderDeployServer" />
+	<meta title="HaxeStackStarterServer" package="com.hackstack.starterserver" version="1.0.0" company="HaxeStack" />
+	<app main="Main" path="Export" file="HaxeStackStarterServer" />
 
 	<source path="Source" />
     <source path="../Shared" />

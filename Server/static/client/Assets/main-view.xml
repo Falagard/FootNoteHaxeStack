@@ -2,6 +2,7 @@
     <!-- Top bar with user info and logout -->
     <hbox id="topBar" percentWidth="100" styleName="topBar">
         <label text="HaxeStack Starter" styleName="appTitle" />
+        <button id="cmsBtn" text="CMS" />
         <spacer percentWidth="100" />
         <label id="userLabel" text="" styleName="userLabel" />
         <button id="logoutBtn" text="Sign Out" styleName="logoutBtn" />
