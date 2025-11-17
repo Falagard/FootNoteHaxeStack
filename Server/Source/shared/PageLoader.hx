@@ -12,7 +12,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("pageId", pageId);
-			var sql = "SELECT latest_version_id FROM Page WHERE id = @pageId";
+			var sql = "SELECT latest_version_id FROM pages WHERE id = @pageId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -33,7 +33,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("pageId", pageId);
-			var sql = "SELECT published_version_id FROM Page WHERE id = @pageId";
+			var sql = "SELECT published_version_id FROM pages WHERE id = @pageId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -59,7 +59,7 @@ class PageLoader {
 			var params = new Map<String, Dynamic>();
 			params.set("slug", slug);
 			var column = published ? "published_version_id" : "latest_version_id";
-			var sql = 'SELECT id, $column FROM Page WHERE slug = @slug';
+			var sql = 'SELECT id, $column FROM pages WHERE slug = @slug';
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -85,7 +85,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
-			var sql = "SELECT id, page_id, version_num, title, layout, created_at, created_by FROM PageVersion WHERE id = @versionId";
+			var sql = "SELECT id, page_id, version_num, title, layout, created_at, created_by FROM page_versions WHERE id = @versionId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -105,7 +105,7 @@ class PageLoader {
 
 			params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
-			sql = "SELECT id, sort_order, type, data_json FROM PageComponent WHERE page_version_id = @versionId ORDER BY sort_order ASC";
+			sql = "SELECT id, sort_order, type, data_json FROM page_components WHERE page_version_id = @versionId ORDER BY sort_order ASC";
 			var rs2 = conn.request(Database.buildSql(sql, params));
 			while (rs2.hasNext()) {
 				var c = rs2.next();
@@ -130,7 +130,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("pageId", pageId);
-			var sql = "SELECT id, version_num, created_at, created_by FROM PageVersion WHERE page_id = @pageId ORDER BY version_num DESC";
+			var sql = "SELECT id, version_num, created_at, created_by FROM page_versions WHERE page_id = @pageId ORDER BY version_num DESC";
 			var rs = conn.request(Database.buildSql(sql, params));
 			var versions = [];
 			while (rs.hasNext()) {
@@ -153,7 +153,7 @@ class PageLoader {
 	public function listPages():Array<PageListItem> {
 		var conn = Database.acquire();
 		try {
-			var sql = "SELECT id, slug, title, created_at FROM Page ORDER BY created_at DESC";
+			var sql = "SELECT id, slug, title, created_at FROM pages ORDER BY created_at DESC";
 			var rs = conn.request(sql);
 			var pages = [];
 			while (rs.hasNext()) {

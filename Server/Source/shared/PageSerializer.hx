@@ -13,7 +13,7 @@ class PageSerializer {
 			// Get next version number
 			var params = new Map<String, Dynamic>();
 			params.set("pageId", page.pageId);
-			var sql = "SELECT COALESCE(MAX(version_num),0)+1 AS nextVer FROM PageVersion WHERE page_id = @pageId";
+			var sql = "SELECT COALESCE(MAX(version_num),0)+1 AS nextVer FROM page_versions WHERE page_id = @pageId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			var nextVer = 1;
 			if (rs.hasNext()) {
@@ -28,7 +28,7 @@ class PageSerializer {
 			params.set("title", page.title);
 			params.set("layout", page.layout);
 			params.set("createdBy", userId);
-			sql = "INSERT INTO PageVersion (page_id, version_num, title, layout, created_by) VALUES (@pageId, @versionNum, @title, @layout, @createdBy)";
+			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, created_by) VALUES (@pageId, @versionNum, @title, @layout, @createdBy)";
 			conn.request(Database.buildSql(sql, params));
 			var versionId = conn.lastInsertId();
 
@@ -40,7 +40,7 @@ class PageSerializer {
 				params.set("sortOrder", comp.sort);
 				params.set("type", comp.type);
 				params.set("dataJson", jsonData);
-				sql = "INSERT INTO PageComponent (page_version_id, sort_order, type, data_json) VALUES (@versionId, @sortOrder, @type, @dataJson)";
+				sql = "INSERT INTO page_components (page_version_id, sort_order, type, data_json) VALUES (@versionId, @sortOrder, @type, @dataJson)";
 				conn.request(Database.buildSql(sql, params));
 			}
 
@@ -48,7 +48,7 @@ class PageSerializer {
 			params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
 			params.set("pageId", page.pageId);
-			sql = "UPDATE Page SET latest_version_id = @versionId WHERE id = @pageId";
+			sql = "UPDATE pages SET latest_version_id = @versionId WHERE id = @pageId";
 			conn.request(Database.buildSql(sql, params));
 
 			Database.release(conn);
@@ -65,7 +65,7 @@ class PageSerializer {
 			var params = new Map<String, Dynamic>();
 			params.set("slug", slug);
 			params.set("title", title);
-			var sql = "INSERT INTO Page (slug, title) VALUES (@slug, @title)";
+			var sql = "INSERT INTO pages (slug, title) VALUES (@slug, @title)";
 			conn.request(Database.buildSql(sql, params));
 			var pageId = conn.lastInsertId();
 
@@ -92,7 +92,7 @@ class PageSerializer {
 			var params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
 			params.set("pageId", pageId);
-			var sql = "UPDATE Page SET published_version_id = @versionId WHERE id = @pageId";
+			var sql = "UPDATE pages SET published_version_id = @versionId WHERE id = @pageId";
 			conn.request(Database.buildSql(sql, params));
 			Database.release(conn);
 		} catch (e:Dynamic) {
