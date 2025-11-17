@@ -37,7 +37,10 @@ class PageEditor extends Dialog {
         this.cmsManager = cmsManager;
         this.title = "Page Editor";
         this.destroyOnClose = true;
-        
+    }
+    
+    public override function onReady():Void {
+        super.onReady();
         initializeUI();
     }
     

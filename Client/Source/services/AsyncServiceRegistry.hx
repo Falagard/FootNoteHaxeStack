@@ -2,6 +2,7 @@ package services;
 
 import sidewinder.AutoClientAsync;
 import IAuthService;
+import ICmsService;
 import sidewinder.ICookieJar;
 import sidewinder.CookieJar;
 
@@ -17,6 +18,7 @@ class AsyncServiceRegistry {
     public var cookieJar(default, null):ICookieJar;
 
     public var auth:Dynamic; // authentication service
+    public var cms:Dynamic; // CMS service
 
     public function new(baseUrl:String) {
         this.baseUrl = baseUrl;
@@ -26,6 +28,7 @@ class AsyncServiceRegistry {
 
     private function createClients():Void {
         auth = AutoClientAsync.create(IAuthService, baseUrl, cookieJar);
+        cms = AutoClientAsync.create(ICmsService, baseUrl, cookieJar);
     }
 
     public function resetBaseUrl(newUrl:String):Void {

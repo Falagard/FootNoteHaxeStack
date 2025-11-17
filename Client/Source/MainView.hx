@@ -84,8 +84,6 @@ class MainView extends VBox {
 		
 		// Create and show page list
 		currentPageList = new PageList(cmsManager);
-		currentPageList.percentWidth = 100;
-		currentPageList.percentHeight = 100;
 		
 		// Handle edit page request
 		currentPageList.onEditPage = function(pageId:Int) {
