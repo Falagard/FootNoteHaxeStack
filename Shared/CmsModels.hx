@@ -1,0 +1,115 @@
+package;
+
+typedef PageComponentDTO = {
+	id:Int,
+	type:String,
+	sort:Int,
+	data:Dynamic
+};
+
+typedef PageVersionDTO = {
+	id:Int,
+	pageId:Int,
+	versionNum:Int,
+	title:String,
+	layout:String,
+	createdAt:String,
+	createdBy:String,
+	components:Array<PageComponentDTO>
+};
+
+typedef PageDTO = {
+	pageId:Int,
+	title:String,
+	layout:String,
+	components:Array<PageComponentDTO>
+};
+
+typedef CreatePageRequest = {
+	slug:String,
+	title:String,
+	layout:String
+};
+
+typedef CreatePageResponse = {
+	success:Bool,
+	?pageId:Null<Int>,
+	?error:String
+};
+
+typedef UpdatePageRequest = {
+	pageId:Int,
+	title:String,
+	layout:String,
+	components:Array<PageComponentDTO>
+};
+
+typedef UpdatePageResponse = {
+	success:Bool,
+	?versionId:Null<Int>,
+	?versionNum:Null<Int>,
+	?error:String
+};
+
+typedef GetPageResponse = {
+	success:Bool,
+	?page:PageVersionDTO,
+	?error:String
+};
+
+typedef ListPagesResponse = {
+	success:Bool,
+	?pages:Array<PageListItem>,
+	?error:String
+};
+
+typedef PageListItem = {
+	id:Int,
+	slug:String,
+	title:String,
+	createdAt:String
+};
+
+typedef PageAssetDTO = {
+	id:Int,
+	pageId:Int,
+	filename:String,
+	mime:String,
+	createdAt:String
+};
+
+typedef UploadAssetRequest = {
+	pageId:Int,
+	filename:String,
+	mime:String,
+	data:String // base64 encoded
+};
+
+typedef UploadAssetResponse = {
+	success:Bool,
+	?assetId:Null<Int>,
+	?error:String
+};
+
+typedef ValidationError = {
+	message:String,
+	?details:String,
+	?component:Dynamic
+};
+
+typedef ValidationResult = {
+	ok:Bool,
+	errors:Array<ValidationError>
+};
+
+typedef AiGenerateRequest = {
+	pageId:Int,
+	prompt:String,
+	?assets:Array<Int> // asset IDs
+};
+
+typedef AiGenerateResponse = {
+	success:Bool,
+	?components:Array<PageComponentDTO>,
+	?error:String
+};

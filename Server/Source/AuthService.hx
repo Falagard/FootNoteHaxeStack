@@ -16,7 +16,8 @@ class AuthService implements IAuthService {
 	public function new() {}
 	
 	private function getConstructorArgs():Array<String> {
-		return [];un
+		return [];
+	}
 
 	public function register(request:RegisterRequest):RegisterResponse {
 		// Validate input

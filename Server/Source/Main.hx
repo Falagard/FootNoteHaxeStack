@@ -1,6 +1,8 @@
 package;
 
 import AuthModels;
+import CmsService;
+import ICmsService;
 import sidewinder.AsyncBlockerPool;
 import sidewinder.UserService;
 import sidewinder.CacheService;
@@ -66,6 +68,7 @@ class Main extends Application {
 		DI.init(c -> {
 			c.addSingleton(ICacheService, CacheService);
 			c.addScoped(IAuthService, AuthService);
+			c.addScoped(ICmsService, CmsService);
 		});
 
 		cache = DI.get(ICacheService);
@@ -204,6 +207,7 @@ class Main extends Application {
 
 		// Build AutoRouter mappings for all controllers
 		AutoRouter.build(router, IAuthService, () -> DI.get(IAuthService));
+		AutoRouter.build(router, ICmsService, () -> DI.get(ICmsService));
 	}
 
 	// Entry point
