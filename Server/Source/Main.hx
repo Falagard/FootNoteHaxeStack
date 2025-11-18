@@ -106,19 +106,39 @@ class Main extends Application {
 					sessionToken = req.cookies.get("session_token");
 				}
 
-				if (sessionToken == null) {
-					res.sendResponse(HTTPStatus.UNAUTHORIZED);
-					res.setHeader("Content-Type", "application/json");
-					res.endHeaders();
-					res.write(haxe.Json.stringify({error: "Unauthorized - No session token"}));
-					res.end();
-					return;
-				}
+                if (sessionToken == null) {
+                    res.sendResponse(HTTPStatus.UNAUTHORIZED);
+                    res.setHeader("Content-Type", "application/json");
+                    res.endHeaders();
+                    res.write(haxe.Json.stringify({error: "Unauthorized - No session token"}));
+                    res.end();
+                    return;
+                }
 
-				var authService:AuthService = cast DI.get(IAuthService);
-				var user = authService.validateSessionToken(sessionToken);
+                // Try to get user from cache first
+                var cachedUser = cache.get("session:" + sessionToken);
+                var user = null;
+                
+                if (cachedUser != null) {
+                    // User found in cache
+                    user = cachedUser;
+                } else {
+                    // Not in cache, validate with database
+                    var authService:AuthService = cast DI.get(IAuthService);
+                    user = authService.validateSessionToken(sessionToken);
+                    
+                    // If valid, cache the user for future requests
+                    if (user != null) {
+                        cache.set("session:" + sessionToken, haxe.Json.stringify({
+                            id: user.id,
+                            email: user.email,
+                            username: user.username,
+                            emailVerified: user.emailVerified
+                        }), 604800); // 7 days in seconds
+                    }
+                }
 
-				if (user == null) {
+			    if (user == null) {
 					res.sendResponse(HTTPStatus.UNAUTHORIZED);
 					res.setHeader("Content-Type", "application/json");
 					res.endHeaders();
@@ -144,21 +164,24 @@ class Main extends Application {
 					return;
 				}
 
-				var authService:AuthService = cast DI.get(IAuthService);
-				var result = authService.login(loginRequest);
+			var authService:AuthService = cast DI.get(IAuthService);
+			var result = authService.login(loginRequest);
 
-				if (result.success) {
-					// Use SideWinder setCookie helper (SameSite attribute not currently supported; extend helper if needed)
-					res.sendResponse(HTTPStatus.OK);
-					res.setHeader("Content-Type", "application/json");
-					res.setCookie("session_token", result.token, {path: "/", domain: null, maxAge: "604800", httpOnly: true, secure: false}); // 7 days
-					// TODO: Add Secure when serving over HTTPS
-					res.endHeaders();
-					res.write(haxe.Json.stringify({
-						success: true,
-						user: result.user
-					}));
-					res.end();
+			if (result.success) {
+				// Cache user details with session token as key
+				cache.set("session:" + result.token, haxe.Json.stringify(result.user), 604800); // 7 days in seconds
+				
+				// Use SideWinder setCookie helper (SameSite attribute not currently supported; extend helper if needed)
+				res.sendResponse(HTTPStatus.OK);
+				res.setHeader("Content-Type", "application/json");
+				res.setCookie("session_token", result.token, {path: "/", domain: null, maxAge: "604800", httpOnly: true, secure: false}); // 7 days
+				// TODO: Add Secure when serving over HTTPS
+				res.endHeaders();
+				res.write(haxe.Json.stringify({
+					success: true,
+					user: result.user
+				}));
+				res.end();
 				} else {
 					res.sendResponse(HTTPStatus.UNAUTHORIZED);
 					res.setHeader("Content-Type", "application/json");
@@ -184,11 +207,13 @@ class Main extends Application {
 					sessionToken = req.cookies.get("session_token");
 				}
 
-				// Invalidate session in database if token exists
-				if (sessionToken != null) {
-					var authService:AuthService = cast DI.get(IAuthService);
-					authService.invalidateSession(sessionToken);
-				} // Clear the cookie
+			// Invalidate session in database if token exists
+			if (sessionToken != null) {
+				var authService:AuthService = cast DI.get(IAuthService);
+				authService.invalidateSession(sessionToken);
+				// Clear cached user data by setting to null with 0 TTL
+				cache.set("session:" + sessionToken, null, 0);
+			} // Clear the cookie
 				res.sendResponse(HTTPStatus.OK);
 				res.setHeader("Content-Type", "application/json");
 				// Clear cookie using helper (SameSite not supported in helper yet)
