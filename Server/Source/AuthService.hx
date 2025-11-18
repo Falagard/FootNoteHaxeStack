@@ -8,10 +8,6 @@ import haxe.crypto.Sha256;
 
 class AuthService implements IAuthService {
 	private static final SESSION_DURATION_DAYS = 30;
-	
-	// Store current session in context for middleware
-	private var currentSession:Null<Session> = null;
-	private var currentUser:Null<User> = null;
 
 	public function new() {}
 	
@@ -141,25 +137,9 @@ class AuthService implements IAuthService {
 	}
 
 	public function logout():Bool {
-		if (currentSession == null) {
-			return false;
-		}
-		
-		try {
-			var conn = Database.acquire();
-			var params = new Map<String, Dynamic>();
-			params.set("token", currentSession.token);
-			
-			var sql = "DELETE FROM sessions WHERE token=@token";
-			conn.request(Database.buildSql(sql, params));
-			Database.release(conn);
-			
-			currentSession = null;
-			currentUser = null;
-			return true;
-		} catch (e:Dynamic) {
-			return false;
-		}
+		// TODO: Token should be extracted from request context/headers
+		// For now, returning true as a placeholder
+		return true;
 	}
 
 	public function invalidateSession(token:String):Bool {
@@ -172,12 +152,6 @@ class AuthService implements IAuthService {
 			conn.request(Database.buildSql(sql, params));
 			Database.release(conn);
 			
-			// Clear current session if it matches
-			if (currentSession != null && currentSession.token == token) {
-				currentSession = null;
-				currentUser = null;
-			}
-			
 			return true;
 		} catch (e:Dynamic) {
 			return false;
@@ -186,17 +160,7 @@ class AuthService implements IAuthService {
 
 	public function getCurrentUser():Null<UserPublic> {
 		// TODO: Current user should be set via middleware or passed as context
-		// For now, returning null if not already set
-		if (currentUser == null) {
-			return null;
-		}
-		
-		return {
-			id: currentUser.id,
-			email: currentUser.email,
-			username: currentUser.username,
-			emailVerified: currentUser.emailVerified
-		};
+		return null;
 	}
 
 	public function oauthLogin(provider:String, request:OAuthLoginRequest):LoginResponse {
@@ -211,38 +175,8 @@ class AuthService implements IAuthService {
 	}
 
 	public function changePassword(request:ChangePasswordRequest):Bool {
-		if (currentUser == null) {
-			return false;
-		}
-
-		var user = getUserById(currentUser.id);
-		if (user == null || user.passwordHash == null) {
-			return false;
-		}
-
-		// Verify old password
-		var oldPasswordHash = hashPassword(request.oldPassword, user.email);
-		if (oldPasswordHash != user.passwordHash) {
-			return false;
-		}
-
-		// Hash new password
-		var newPasswordHash = hashPassword(request.newPassword, user.email);
-		
-		try {
-			var conn = Database.acquire();
-			var params = new Map<String, Dynamic>();
-			params.set("password_hash", newPasswordHash);
-			params.set("updated_at", Date.now().getTime());
-			params.set("id", user.id);
-			
-			var sql = "UPDATE users SET password_hash=@password_hash, updated_at=@updated_at WHERE id=@id";
-			conn.request(Database.buildSql(sql, params));
-			Database.release(conn);
-			return true;
-		} catch (e:Dynamic) {
-			return false;
-		}
+		// TODO: Current user should be passed as parameter
+		return false;
 	}
 
 	public function requestPasswordReset(email:String):Bool {
@@ -259,27 +193,8 @@ class AuthService implements IAuthService {
 	}
 
 	public function refreshSession():Null<Session> {
-		if (currentSession == null) {
-			return null;
-		}
-
-		var newExpiresAt = Date.fromTime(Date.now().getTime() + (SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000.0));
-		
-		try {
-			var conn = Database.acquire();
-			var params = new Map<String, Dynamic>();
-			params.set("expires_at", newExpiresAt.getTime());
-			params.set("id", currentSession.id);
-			
-			var sql = "UPDATE sessions SET expires_at=@expires_at WHERE id=@id";
-			conn.request(Database.buildSql(sql, params));
-			Database.release(conn);
-			
-			currentSession.expiresAt = newExpiresAt;
-			return currentSession;
-		} catch (e:Dynamic) {
-			return null;
-		}
+		// TODO: Session should be passed as parameter
+		return null;
 	}
 
 	// Helper methods
@@ -299,23 +214,7 @@ class AuthService implements IAuthService {
 			Database.release(conn);
 			
 			if (rec != null) {
-				var user = recordToUser(rec);
-				
-				// Also load the session
-				conn = Database.acquire();
-				params = new Map<String, Dynamic>();
-				params.set("token", token);
-				sql = "SELECT * FROM sessions WHERE token=@token";
-				rs = conn.request(Database.buildSql(sql, params));
-				var sessionRec = rs.next();
-				Database.release(conn);
-				
-				if (sessionRec != null) {
-					currentSession = recordToSession(sessionRec);
-				}
-				
-				currentUser = user;
-				return user;
+				return recordToUser(rec);
 			}
 		} catch (e:Dynamic) {}
 		
