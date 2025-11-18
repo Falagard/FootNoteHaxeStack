@@ -231,8 +231,8 @@ class Main extends Application {
 		});
 
 		// Build AutoRouter mappings for all controllers
-		AutoRouter.build(router, IAuthService, () -> DI.get(IAuthService));
-		AutoRouter.build(router, ICmsService, () -> DI.get(ICmsService));
+		AutoRouter.build(router, IAuthService, () -> DI.get(IAuthService), cache);
+		AutoRouter.build(router, ICmsService, () -> DI.get(ICmsService), cache);
 	}
 
 	// Entry point
