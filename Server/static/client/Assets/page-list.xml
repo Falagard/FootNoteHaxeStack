@@ -7,9 +7,7 @@
     <button id="refreshBtn" text="Refresh" icon="icons/refresh.png" />
   </hbox>
   
-  <scrollview percentWidth="100" percentHeight="100">
-    <vbox id="pageGrid" percentWidth="100" />
-  </scrollview>
+  <tableview id="pageTable" percentWidth="100" percentHeight="100" />
   
   <!-- Create Page Dialog (inline) -->
   <dialog id="createDialog" width="400" title="Create New Page" hidden="true">

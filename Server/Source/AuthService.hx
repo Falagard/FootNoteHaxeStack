@@ -341,7 +341,8 @@ class AuthService implements IAuthService {
 			
 			var sql = "INSERT INTO sessions (id, user_id, token, expires_at, created_at, ip_address, user_agent) " +
 					  "VALUES (@id, @user_id, @token, @expires_at, @created_at, @ip_address, @user_agent)";
-			conn.request(Database.buildSql(sql, params));
+            var builtSql = Database.buildSql(sql, params);
+			conn.request(builtSql);
 			Database.release(conn);
 
 			return {

@@ -4,37 +4,37 @@ import CmsModels;
 import hx.injection.Service;
 
 interface ICmsService extends Service {
-@post("/api/cms/createPage")
+@post("/api/cms/page")
 function createPage(request:CreatePageRequest):CreatePageResponse;
 
-@post("/api/cms/updatePage")
-function updatePage(request:UpdatePageRequest, ?userId:String):UpdatePageResponse;
+@put("/api/cms/page/:id")
+function updatePage(id:Int, request:UpdatePageRequest, ?userId:String):UpdatePageResponse;
 
-@post("/api/cms/getPage")
-function getPage(pageId:Int):GetPageResponse;
+@get("/api/cms/page/:id")
+function getPage(id:Int):GetPageResponse;
 
-@get("/api/cms/pages/slug/:slug")
+@get("/api/cms/page/slug/:slug")
 function getPageBySlug(slug:String, ?published:Bool = true):GetPageResponse;
 
-@post("/api/cms/listPages")
+@get("/api/cms/pages")
 function listPages():ListPagesResponse;
 
-@post("/api/cms/publishVersion")
+@post("/api/cms/page/:pageId/version/:versionId/publish")
 function publishVersion(pageId:Int, versionId:Int):CreatePageResponse;
 
-@post("/api/cms/restoreVersion")
+@post("/api/cms/version/:versionId/restore")
 function restoreVersion(versionId:Int, ?userId:String):UpdatePageResponse;
 
-@post("/api/cms/listVersions")
+@get("/api/cms/page/:pageId/versions")
 function listVersions(pageId:Int):Dynamic;
 
-@post("/api/cms/uploadAsset")
+@post("/api/cms/asset")
 function uploadAsset(request:UploadAssetRequest):UploadAssetResponse;
 
-@post("/api/cms/getAsset")
+@get("/api/cms/asset/:assetId")
 function getAsset(assetId:Int):Dynamic;
 
-@post("/api/cms/listAssets")
+@get("/api/cms/page/:pageId/assets")
 function listAssets(pageId:Int):Dynamic;
 
 @post("/api/cms/validate")

@@ -39,11 +39,11 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function updatePage(request:UpdatePageRequest, ?userId:String):UpdatePageResponse {
+	public function updatePage(id:Int, request:UpdatePageRequest, ?userId:String):UpdatePageResponse {
 		try {
 			// Validate the page DTO
 			var pageDto:PageDTO = {
-				pageId: request.pageId,
+				pageId: id,
 				title: request.title,
 				layout: request.layout,
 				components: request.components
@@ -72,9 +72,9 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function getPage(pageId:Int):GetPageResponse {
+	public function getPage(id:Int):GetPageResponse {
 		try {
-			var page = loader.loadLatest(pageId);
+			var page = loader.loadLatest(id);
 			return {success: true, page: page};
 		} catch (e:Dynamic) {
 			return {success: false, error: 'Error loading page: $e'};

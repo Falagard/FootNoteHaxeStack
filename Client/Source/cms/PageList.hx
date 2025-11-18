@@ -4,10 +4,12 @@ import haxe.ui.containers.VBox;
 import haxe.ui.containers.HBox;
 import haxe.ui.containers.ScrollView;
 import haxe.ui.containers.dialogs.Dialog;
+import haxe.ui.containers.TableView;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import haxe.ui.components.TextField;
 import haxe.ui.components.Spacer;
+import haxe.ui.data.ArrayDataSource;
 import cms.CmsManager;
 import cms.PageEditor;
 import CmsModels;
@@ -20,7 +22,7 @@ class PageList extends VBox {
     // UI components
     var createPageBtn:Button;
     var refreshBtn:Button;
-    var pageGrid:VBox;
+    var pageTable:TableView;
     var createDialog:Dialog;
     var slugField:TextField;
     var titleField:TextField;
@@ -29,6 +31,7 @@ class PageList extends VBox {
     
     var cmsManager:CmsManager;
     var pages:Array<PageListItem> = [];
+    var tableDataSource:ArrayDataSource<Dynamic>;
     
     public function new(cmsManager:CmsManager) {
         super();
@@ -65,18 +68,30 @@ class PageList extends VBox {
         
         addComponent(topBar);
         
-        // Scroll view with page grid
-        var scrollView = new ScrollView();
-        scrollView.percentWidth = 100;
-        scrollView.percentHeight = 100;
+        // Create table view
+        pageTable = new TableView();
+        pageTable.percentWidth = 100;
+        pageTable.percentHeight = 100;
         
-        pageGrid = new VBox();
-        //pageGrid.percentWidth = 100;
-        pageGrid.width = 400;
-
-        scrollView.addComponent(pageGrid);
+        // Add columns
+        pageTable.addColumn("ID");
+        pageTable.addColumn("Slug");
+        pageTable.addColumn("Title");
+        pageTable.addColumn("Created");
         
-        addComponent(scrollView);
+        // Initialize data source
+        tableDataSource = new ArrayDataSource<Dynamic>();
+        pageTable.dataSource = tableDataSource;
+        
+        // Handle row click for editing
+        pageTable.onClick = function(event) {
+            var selectedItem = pageTable.selectedItem;
+            if (selectedItem != null && selectedItem.pageId != null) {
+                editPage(selectedItem.pageId);
+            }
+        };
+        
+        addComponent(pageTable);
     }
     
     /** Load all pages from server */
@@ -89,56 +104,23 @@ class PageList extends VBox {
         });
     }
     
-    /** Render the pages in the grid */
+    /** Render the pages in the table */
     function renderPages():Void {
-        if (pageGrid == null) return;
+        if (tableDataSource == null) return;
         
-        pageGrid.removeAllComponents();
+        tableDataSource.clear();
         
-        // Add header row
-        var headerRow = new HBox();
-        headerRow.percentWidth = 100;
-        headerRow.addComponent(createLabel("ID", true));
-        headerRow.addComponent(createLabel("Slug", true));
-        headerRow.addComponent(createLabel("Title", true));
-        headerRow.addComponent(createLabel("Created", true));
-        headerRow.addComponent(createLabel("Actions", true));
-        pageGrid.addComponent(headerRow);
-        
-        // Add page rows
+        // Add page data to table
         for (page in pages) {
-            var row = new HBox();
-            row.percentWidth = 100;
-            
-            row.addComponent(createLabel(Std.string(page.id), false));
-            row.addComponent(createLabel(page.slug, false));
-            row.addComponent(createLabel(page.title, false));
-            row.addComponent(createLabel(Std.string(page.createdAt), false));
-            
-            var actionsBox = new HBox();
-            
-            var editBtn = new Button();
-            editBtn.text = "Edit";
-            editBtn.onClick = function(_) editPage(page.id);
-            actionsBox.addComponent(editBtn);
-            
-            var viewBtn = new Button();
-            viewBtn.text = "View";
-            viewBtn.onClick = function(_) viewPage(page.id);
-            actionsBox.addComponent(viewBtn);
-            
-            row.addComponent(actionsBox);
-            pageGrid.addComponent(row);
+            var rowData:Dynamic = {
+                ID: page.id,
+                Slug: page.slug,
+                Title: page.title,
+                Created: Std.string(page.createdAt),
+                pageId: page.id // Store pageId for actions
+            };
+            tableDataSource.add(rowData);
         }
-    }
-    
-    function createLabel(text:String, isHeader:Bool):Label {
-        var label = new Label();
-        label.text = text;
-        if (isHeader) {
-            label.styleNames = "gridHeader";
-        }
-        return label;
     }
     
     /** Show create page dialog */

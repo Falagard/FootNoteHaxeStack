@@ -18,7 +18,13 @@ class PageLoader {
 				Database.release(conn);
 				throw 'Page not found: $pageId';
 			}
-			var versionId = rs.next().getInt(0);
+            var rec = rs.next();
+			var versionIdField = Reflect.field(rec, "latest_version_id");
+			var versionId = versionIdField != null ? Std.int(versionIdField) : 0;
+			if (versionId == 0) {
+				Database.release(conn);
+				throw 'Page has no latest version: $pageId';
+			}
 			var result = loadVersion(versionId);
 			Database.release(conn);
 			return result;
@@ -39,8 +45,10 @@ class PageLoader {
 				Database.release(conn);
 				throw 'Page not found: $pageId';
 			}
-			var versionId = rs.next().getInt(0);
-			if (versionId == null || versionId == 0) {
+			var rec = rs.next();
+			var versionIdField = Reflect.field(rec, "published_version_id");
+			var versionId = versionIdField != null ? Std.int(versionIdField) : 0;
+			if (versionId == 0) {
 				Database.release(conn);
 				throw 'Page has no published version: $pageId';
 			}
@@ -66,8 +74,9 @@ class PageLoader {
 				throw 'Page not found: $slug';
 			}
 			var rec = rs.next();
-			var versionId = rec.getInt(1);
-			if (versionId == null || versionId == 0) {
+			var versionIdField = Reflect.field(rec, column);
+			var versionId = versionIdField != null ? Std.int(versionIdField) : 0;
+			if (versionId == 0) {
 				Database.release(conn);
 				throw 'Page has no ${published ? "published" : "latest"} version: $slug';
 			}
@@ -81,6 +90,9 @@ class PageLoader {
 	}
 
 	public function loadVersion(versionId:Int):PageVersionDTO {
+		if (versionId == 0) {
+			throw 'Invalid version ID: 0';
+		}
 		var conn = Database.acquire();
 		try {
 			var params = new Map<String, Dynamic>();
@@ -93,13 +105,13 @@ class PageLoader {
 			}
 			var v = rs.next();
 			var dto:PageVersionDTO = {
-				id: v.getInt(0),
-				pageId: v.getInt(1),
-				versionNum: v.getInt(2),
-				title: v.getString(3),
-				layout: v.getString(4),
-				createdAt: Date.fromString(v.getString(5)),
-				createdBy: v.getString(6),
+				id: Std.int(Reflect.field(v, "id")),
+				pageId: Std.int(Reflect.field(v, "page_id")),
+				versionNum: Std.int(Reflect.field(v, "version_num")),
+				title: Std.string(Reflect.field(v, "title")),
+				layout: Std.string(Reflect.field(v, "layout")),
+				createdAt: Date.fromString(Std.string(Reflect.field(v, "created_at"))),
+				createdBy: Std.string(Reflect.field(v, "created_by")),
 				components: []
 			};
 
@@ -110,10 +122,10 @@ class PageLoader {
 			while (rs2.hasNext()) {
 				var c = rs2.next();
 				dto.components.push({
-					id: c.getInt(0),
-					sort: c.getInt(1),
-					type: c.getString(2),
-					data: Json.parse(c.getString(3))
+					id: Std.int(Reflect.field(c, "id")),
+					sort: Std.int(Reflect.field(c, "sort_order")),
+					type: Std.string(Reflect.field(c, "type")),
+					data: Json.parse(Std.string(Reflect.field(c, "data_json")))
 				});
 			}
 
@@ -136,10 +148,10 @@ class PageLoader {
 			while (rs.hasNext()) {
 				var rec = rs.next();
 				versions.push({
-					id: rec.getInt(0),
-					versionNum: rec.getInt(1),
-					createdAt: Date.fromString(rec.getString(2)),
-					createdBy: rec.getString(3)
+					id: Std.int(Reflect.field(rec, "id")),
+					versionNum: Std.int(Reflect.field(rec, "version_num")),
+					createdAt: Date.fromString(Std.string(Reflect.field(rec, "created_at"))),
+					createdBy: Std.string(Reflect.field(rec, "created_by"))
 				});
 			}
 			Database.release(conn);
@@ -159,10 +171,10 @@ class PageLoader {
 			while (rs.hasNext()) {
 				var rec = rs.next();
 				pages.push({
-					id: rec.id,
-					slug: rec.slug,
-					title: rec.title,
-					createdAt: Date.fromString(rec.created_at)
+					id: Std.int(Reflect.field(rec, "id")),
+					slug: Std.string(Reflect.field(rec, "slug")),
+					title: Std.string(Reflect.field(rec, "title")),
+					createdAt: Date.fromString(Std.string(Reflect.field(rec, "created_at")))
 				});
 			}
 			Database.release(conn);
@@ -186,9 +198,9 @@ class PageLoader {
 			}
 			var rec = rs.next();
 			var result = {
-				filename: rec.getString(0),
-				mime: rec.getString(1),
-				data: rec.getString(2)
+				filename: Std.string(Reflect.field(rec, "filename")),
+				mime: Std.string(Reflect.field(rec, "mime")),
+				data: Std.string(Reflect.field(rec, "data"))
 			};
 			Database.release(conn);
 			return result;
@@ -209,11 +221,11 @@ class PageLoader {
 			while (rs.hasNext()) {
 				var rec = rs.next();
 				assets.push({
-					id: rec.getInt(0),
-					pageId: rec.getInt(1),
-					filename: rec.getString(2),
-					mime: rec.getString(3),
-					createdAt: Date.fromString(rec.getString(4))
+					id: Std.int(Reflect.field(rec, "id")),
+					pageId: Std.int(Reflect.field(rec, "page_id")),
+					filename: Std.string(Reflect.field(rec, "filename")),
+					mime: Std.string(Reflect.field(rec, "mime")),
+					createdAt: Date.fromString(Std.string(Reflect.field(rec, "created_at")))
 				});
 			}
 			Database.release(conn);
