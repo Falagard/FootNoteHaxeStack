@@ -1,5 +1,7 @@
 package;
 
+import Date;
+
 typedef PageComponentDTO = {
 	id:Int,
 	type:String,
@@ -13,7 +15,7 @@ typedef PageVersionDTO = {
 	versionNum:Int,
 	title:String,
 	layout:String,
-	createdAt:String,
+	createdAt:Date,
 	createdBy:String,
 	components:Array<PageComponentDTO>
 };
@@ -67,7 +69,7 @@ typedef PageListItem = {
 	id:Int,
 	slug:String,
 	title:String,
-	createdAt:String
+	createdAt:Date
 };
 
 typedef PageAssetDTO = {
@@ -75,7 +77,7 @@ typedef PageAssetDTO = {
 	pageId:Int,
 	filename:String,
 	mime:String,
-	createdAt:String
+	createdAt:Date
 };
 
 typedef UploadAssetRequest = {

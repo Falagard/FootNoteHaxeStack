@@ -98,7 +98,7 @@ class PageLoader {
 				versionNum: v.getInt(2),
 				title: v.getString(3),
 				layout: v.getString(4),
-				createdAt: v.getString(5),
+				createdAt: Date.fromString(v.getString(5)),
 				createdBy: v.getString(6),
 				components: []
 			};
@@ -125,7 +125,7 @@ class PageLoader {
 		}
 	}
 
-	public function listVersions(pageId:Int):Array<{id:Int, versionNum:Int, createdAt:String, createdBy:String}> {
+	public function listVersions(pageId:Int):Array<{id:Int, versionNum:Int, createdAt:Date, createdBy:String}> {
 		var conn = Database.acquire();
 		try {
 			var params = new Map<String, Dynamic>();
@@ -138,7 +138,7 @@ class PageLoader {
 				versions.push({
 					id: rec.getInt(0),
 					versionNum: rec.getInt(1),
-					createdAt: rec.getString(2),
+					createdAt: Date.fromString(rec.getString(2)),
 					createdBy: rec.getString(3)
 				});
 			}
@@ -162,7 +162,7 @@ class PageLoader {
 					id: rec.id,
 					slug: rec.slug,
 					title: rec.title,
-					createdAt: rec.created_at
+					createdAt: Date.fromString(rec.created_at)
 				});
 			}
 			Database.release(conn);
@@ -213,7 +213,7 @@ class PageLoader {
 					pageId: rec.getInt(1),
 					filename: rec.getString(2),
 					mime: rec.getString(3),
-					createdAt: rec.getString(4)
+					createdAt: Date.fromString(rec.getString(4))
 				});
 			}
 			Database.release(conn);
