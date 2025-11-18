@@ -169,7 +169,7 @@ class Main extends Application {
 
 			if (result.success) {
 				// Cache user details with session token as key
-				cache.set("session:" + result.token, haxe.Json.stringify(result.user), 604800); // 7 days in seconds
+				cache.set("session:" + result.token, result.user, 604800); // 7 days in seconds
 				
 				// Use SideWinder setCookie helper (SameSite attribute not currently supported; extend helper if needed)
 				res.sendResponse(HTTPStatus.OK);

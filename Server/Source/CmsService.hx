@@ -22,7 +22,7 @@ class CmsService implements ICmsService {
 		this.validator = new JsonValidator();
 	}
 
-	public function createPage(request:CreatePageRequest):CreatePageResponse {
+	public function createPage(request:CreatePageRequest, userId:String):CreatePageResponse {
 		try {
 			if (request.slug == null || request.slug.length == 0) {
 				return {success: false, error: "Slug is required"};
@@ -39,7 +39,7 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function updatePage(id:Int, request:UpdatePageRequest, ?userId:String):UpdatePageResponse {
+	public function updatePage(id:Int, request:UpdatePageRequest, userId:String):UpdatePageResponse {
 		try {
 			// Validate the page DTO
 			var pageDto:PageDTO = {
@@ -99,7 +99,7 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function publishVersion(pageId:Int, versionId:Int):CreatePageResponse {
+	public function publishVersion(pageId:Int, versionId:Int, userId:String):CreatePageResponse {
 		try {
 			serializer.publishVersion(pageId, versionId);
 			return {success: true};
@@ -108,7 +108,7 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function restoreVersion(versionId:Int, ?userId:String):UpdatePageResponse {
+	public function restoreVersion(versionId:Int, userId:String):UpdatePageResponse {
 		try {
 			var newVersionId = restorer.restoreVersion(versionId, userId);
 			var version = loader.loadVersion(newVersionId);
@@ -131,7 +131,7 @@ class CmsService implements ICmsService {
 		}
 	}
 
-	public function uploadAsset(request:UploadAssetRequest):UploadAssetResponse {
+	public function uploadAsset(request:UploadAssetRequest, userId:String):UploadAssetResponse {
 		try {
 			if (request.pageId <= 0) {
 				return {success: false, error: "Valid pageId is required"};

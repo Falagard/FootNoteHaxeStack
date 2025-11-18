@@ -42,7 +42,7 @@ class CmsManager {
             components: components
         };
         
-        untyped asyncServices.cms.updatePageAsync(request, function(response:UpdatePageResponse) {
+        untyped asyncServices.cms.updatePageAsync(pageId, request, function(response:UpdatePageResponse) {
             if (response.success) {
                 Notifications.show('Page updated successfully (version ${response.versionNum})', 'success');
             } else {
