@@ -111,7 +111,7 @@ class PageList extends VBox {
             row.addComponent(createLabel(Std.string(page.id), false));
             row.addComponent(createLabel(page.slug, false));
             row.addComponent(createLabel(page.title, false));
-            row.addComponent(createLabel(page.createdAt, false));
+            row.addComponent(createLabel(Std.string(page.createdAt), false));
             
             var actionsBox = new HBox();
             

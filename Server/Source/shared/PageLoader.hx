@@ -159,10 +159,10 @@ class PageLoader {
 			while (rs.hasNext()) {
 				var rec = rs.next();
 				pages.push({
-					id: rec.getInt(0),
-					slug: rec.getString(1),
-					title: rec.getString(2),
-					createdAt: rec.getString(3)
+					id: rec.id,
+					slug: rec.slug,
+					title: rec.title,
+					createdAt: rec.created_at
 				});
 			}
 			Database.release(conn);

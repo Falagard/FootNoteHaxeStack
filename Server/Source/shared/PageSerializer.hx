@@ -18,7 +18,7 @@ class PageSerializer {
 			var nextVer = 1;
 			if (rs.hasNext()) {
 				var rec = rs.next();
-				nextVer = rec.getInt(0);
+				nextVer = rec.nextVer;
 			}
 
 			// Insert new version
