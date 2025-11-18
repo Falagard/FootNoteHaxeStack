@@ -71,7 +71,9 @@ class PageList extends VBox {
         scrollView.percentHeight = 100;
         
         pageGrid = new VBox();
-        pageGrid.percentWidth = 100;
+        //pageGrid.percentWidth = 100;
+        pageGrid.width = 400;
+
         scrollView.addComponent(pageGrid);
         
         addComponent(scrollView);
