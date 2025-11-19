@@ -21,8 +21,6 @@ class ImageComponent extends BaseComponent {
         
         if (_props.url != null && _props.url != "") {
             var img = new Image();
-            img.resource = Std.string(_props.url);
-            
             // Set width
             var width = Std.parseInt(Std.string(_props.width));
             if (width != null && width > 0 && width <= 100) {
@@ -30,8 +28,10 @@ class ImageComponent extends BaseComponent {
             } else {
                 img.percentWidth = 100;
             }
-            
             box.addComponent(img);
+            img.registerEvent(haxe.ui.events.UIEvent.READY, function(_) {
+                img.resource = Std.string(_props.url);
+            });
         } else {
             var placeholder = new Label();
             placeholder.text = "[Image: " + (_props.alt != null ? _props.alt : "No URL set") + "]";
