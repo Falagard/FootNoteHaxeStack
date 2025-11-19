@@ -18,7 +18,7 @@ class EditorComponent {
         container = new VBox();
         container.percentWidth = 100;
         container.styleNames = "editorComponent";
-        container.mouseEnabled = true;
+        //container.mouseEnabled = true;
 
         refresh();
     }

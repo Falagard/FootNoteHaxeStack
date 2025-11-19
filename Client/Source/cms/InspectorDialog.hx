@@ -62,14 +62,15 @@ class InspectorDialog extends Dialog {
 
 	function addTextInspector(editorComp:EditorComponent):Void {
 		var dto = editorComp.dto;
-		var textField = new haxe.ui.components.TextField();
-		textField.text = dto.data.text != null ? dto.data.text : "";
-		textField.percentWidth = 100;
-		textField.onChange = function(_) {
-			dto.data.text = textField.text;
+		var textArea = new haxe.ui.components.TextArea();
+		textArea.text = dto.data.text != null ? dto.data.text : "";
+		textArea.percentWidth = 100;
+		textArea.height = 100;
+		textArea.onChange = function(_) {
+			dto.data.text = textArea.text;
 			editorComp.refresh();
 		};
-		inspectorContent.addComponent(textField);
+		inspectorContent.addComponent(textArea);
 
 		var styleDrop = new haxe.ui.components.DropDown();
 		styleDrop.dataSource = haxe.ui.data.ArrayDataSource.fromArray(["normal", "h1", "h2", "h3"]);

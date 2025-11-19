@@ -15,6 +15,7 @@
 	<haxelib name="actuate" />
     <haxelib name="SideWinder" />
     <haxelib name="haxe-injection"/>
+    <haxelib name="markdown-openfl-textfield"/>
 	<assets path="Assets" />
 
     <define name="api_host" value="http://127.0.0.1:8000" />

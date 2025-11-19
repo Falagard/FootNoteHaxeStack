@@ -1,5 +1,5 @@
 <!-- Page Editor Dialog Layout -->
-<dialog id="pageEditorDialog" width="90%" height="90%" styleName="pageEditorDialog" closable="true" buttons="none">
+<dialog id="pageEditorDialog" width="800" percentHeight="100" styleName="pageEditorDialog" closable="true" buttons="none">
   <hbox percentWidth="100" percentHeight="100">
     
     <!-- Left Panel: Component Palette -->
@@ -9,26 +9,21 @@
     </vbox>
     
     <!-- Center: Canvas -->
-    <vbox id="canvasPanel" percentWidth="60" percentHeight="100" styleName="canvasPanel">
-      <hbox percentWidth="100">
+    <vbox id="canvasPanel" width="200" percentHeight="100" styleName="canvasPanel">
+      <hbox width="200">
         <label id="pageTitle" text="Page Editor" styleName="panelTitle" />
         <spacer percentWidth="100" />
         <button id="saveDraftBtn" text="Save Draft" icon="icons/save.png" />
         <button id="publishBtn" text="Publish" icon="icons/publish.png" />
       </hbox>
       
-      <scrollview id="canvasScroll" percentWidth="100" percentHeight="100" styleName="canvas">
-        <vbox id="canvas" percentWidth="100" />
+      <scrollview id="canvasScroll" width="200" percentHeight="100" styleName="canvas">
+        <vbox id="canvas" width="200" />
       </scrollview>
     </vbox>
     
     <!-- Right Panel: Inspector -->
-    <vbox id="inspectorPanel" width="250" percentHeight="100" styleName="inspectorPanel">
-      <label text="Inspector" styleName="panelTitle" />
-      <scrollview percentWidth="100" percentHeight="100">
-        <vbox id="inspector" percentWidth="100" />
-      </scrollview>
-    </vbox>
+
     
   </hbox>
 </dialog>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="400" height="auto" title="Inspector" modal="true">
+    <vbox id="inspectorContent" percentWidth="100" />
+    <hbox horizontalAlign="right" percentWidth="100">
+        <button id="closeBtn" text="Close" width="80" />
+    </hbox>
+</dialog>
