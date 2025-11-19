@@ -18,6 +18,13 @@ import CmsModels;
 /** Page editor dialog for editing pages with live preview */
 @:build(haxe.ui.ComponentBuilder.build("Assets/page-editor.xml"))
 class PageEditor extends Dialog {
+	var showEditorButtons:Bool = true;
+
+	function setShowEditorButtons(value:Bool):Void {
+		showEditorButtons = value;
+		hydrateEditor();
+	}
+
 	/** Move a component up or down in the list */
 	public function moveComponentInEditor(editorComp:EditorComponent, direction:Int):Void {
 		var idx = editorComponents.indexOf(editorComp);
@@ -26,7 +33,7 @@ class PageEditor extends Dialog {
 			return;
 		editorComponents.remove(editorComp);
 		editorComponents.insert(newIdx, editorComp);
-        
+
 		canvas.removeAllComponents(false);
 
 		for (ec in editorComponents) {
@@ -59,7 +66,7 @@ class PageEditor extends Dialog {
 		canvas.removeAllComponents();
 		if (currentPage != null && currentPage.components != null) {
 			for (compDTO in currentPage.components) {
-				var editorComp = new EditorComponent(compDTO, this);
+				var editorComp = new EditorComponent(compDTO, this, showEditorButtons);
 				editorComponents.push(editorComp);
 				canvas.addComponent(editorComp.container);
 			}
@@ -108,6 +115,20 @@ class PageEditor extends Dialog {
 				btn.onClick = function(_) addNewComponent(Std.string(btn.userData));
 				componentList.addComponent(btn);
 			}
+
+			// Add preview/edit mode buttons
+			var btnBox = new HBox();
+			var previewBtn = new Button();
+			previewBtn.text = "Preview";
+			previewBtn.onClick = function(_) setShowEditorButtons(false);
+			btnBox.addComponent(previewBtn);
+
+			var editModeBtn = new Button();
+			editModeBtn.text = "Edit";
+			editModeBtn.onClick = function(_) setShowEditorButtons(true);
+			btnBox.addComponent(editModeBtn);
+
+			componentList.addComponent(btnBox);
 		}
 
 		// Wire up buttons
