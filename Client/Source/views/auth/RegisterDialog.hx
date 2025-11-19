@@ -15,9 +15,9 @@ class RegisterDialog extends Dialog {
     public var onRegisterSuccess:UserPublic->Void; // callback with user info
     public var onBackToLogin:Void->Void; // callback to return to login
     
-    var emailField:TextField; // from XML
-    var usernameField:TextField; // from XML
-    var passwordField:TextField; // from XML
+    public var emailField:TextField; // from XML
+    public var usernameField:TextField; // from XML
+    public var passwordField:TextField; // from XML
     var confirmPasswordField:TextField; // from XML
     var errorLabel:Label; // from XML
     var registerBtn:Button; // from XML

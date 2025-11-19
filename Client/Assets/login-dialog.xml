@@ -1,5 +1,5 @@
 <!-- Login dialog XML layout -->
-<dialog id="loginDialog" width="400" styleName="loginDialog" closable="true" buttons="none">
+<dialog id="loginDialog" width="400" height="180" styleName="loginDialog" closable="true" buttons="none">
   <vbox id="contentBox" percentWidth="100">
     <label text="Sign In" styleName="dialogTitle" />
     

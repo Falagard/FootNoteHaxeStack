@@ -12,11 +12,18 @@ using StringTools;
 /** Login dialog for user authentication */
 @:build(haxe.ui.ComponentBuilder.build("Assets/login-dialog.xml"))
 class LoginDialog extends Dialog {
+        public function getEmailOrUsername():String {
+            return (emailField != null && emailField.text != null) ? emailField.text.trim() : "";
+        }
+
+        public function getPassword():String {
+            return (passwordField != null && passwordField.text != null) ? passwordField.text.trim() : "";
+        }
     public var onLoginSuccess:UserPublic->String->Void; // callback with user and token
     public var onRegisterRequested:Void->Void; // callback to show registration
     
-    var emailField:TextField; // from XML
-    var passwordField:TextField; // from XML
+    public var emailField:TextField; // from XML
+    public var passwordField:TextField; // from XML
     var errorLabel:Label; // from XML
     var loginBtn:Button; // from XML
     var registerBtn:Button; // from XML

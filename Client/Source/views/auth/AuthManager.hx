@@ -72,21 +72,34 @@ class AuthManager {
         
         loginDialog.onRegisterRequested = function() {
             // Close login and show registration
+            var emailOrUsername = "";
+            var password = "";
             if (loginDialog != null) {
+                // Get current field values before closing
+                emailOrUsername = loginDialog.getEmailOrUsername();
+                password = loginDialog.getPassword();
                 loginDialog.hideDialog("cancel");
                 loginDialog = null;
             }
-            showRegister();
+            showRegisterWithPrefill(emailOrUsername, password);
         };
         
         loginDialog.showDialog(true);
     }
     
     public function showRegister():Void {
+        showRegisterWithPrefill("", "");
+    }
+
+    public function showRegisterWithPrefill(emailOrUsername:String, password:String):Void {
         if (registerDialog != null) return; // already showing
-        
+
         registerDialog = new RegisterDialog();
         registerDialog.dialogParent = parentComponent;
+        // Pre-fill fields if provided
+        if (registerDialog.emailField != null) registerDialog.emailField.text = emailOrUsername;
+        if (registerDialog.usernameField != null) registerDialog.usernameField.text = emailOrUsername;
+        if (registerDialog.passwordField != null) registerDialog.passwordField.text = password;
         
         registerDialog.onRegisterSuccess = function(user:UserPublic) {
             registerDialog = null;
