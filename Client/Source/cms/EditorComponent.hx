@@ -18,10 +18,9 @@ class EditorComponent {
         container = new VBox();
         container.percentWidth = 100;
         container.styleNames = "editorComponent";
+        container.mouseEnabled = true;
+
         refresh();
-        container.onClick = function(_) {
-            editor.selectComponent(this);
-        };
     }
 
     public function refresh():Void {
@@ -29,6 +28,31 @@ class EditorComponent {
         var comp = ComponentFactory.fromDTO(dto);
         var rendered = comp.render();
         container.addComponent(rendered);
+
+        var btnBox = new haxe.ui.containers.HBox();
+
+        var upBtn = new haxe.ui.components.Button();
+        upBtn.text = "Up";
+        upBtn.onClick = function(_) {
+            editor.moveComponentInEditor(this, -1);
+        };
+        btnBox.addComponent(upBtn);
+
+        var downBtn = new haxe.ui.components.Button();
+        downBtn.text = "Down";
+        downBtn.onClick = function(_) {
+            editor.moveComponentInEditor(this, 1);
+        };
+        btnBox.addComponent(downBtn);
+
+        var editBtn = new haxe.ui.components.Button();
+        editBtn.text = "Edit";
+        editBtn.onClick = function(_) {
+            editor.selectComponent(this);
+        };
+        btnBox.addComponent(editBtn);
+
+        container.addComponent(btnBox);
     }
 
     public function setSelected(selected:Bool):Void {
