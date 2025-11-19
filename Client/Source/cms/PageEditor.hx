@@ -8,6 +8,7 @@ import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import haxe.ui.components.TextField;
 import haxe.ui.components.DropDown;
+import haxe.ui.components.Switch;
 import haxe.ui.data.ArrayDataSource;
 import cms.CmsManager;
 import cms.ComponentFactory;
@@ -19,6 +20,7 @@ import CmsModels;
 @:build(haxe.ui.ComponentBuilder.build("Assets/page-editor.xml"))
 class PageEditor extends Dialog {
 	var showEditorButtons:Bool = true;
+	var previewSwitch:Switch;
 
 	function setShowEditorButtons(value:Bool):Void {
 		showEditorButtons = value;
@@ -99,6 +101,13 @@ class PageEditor extends Dialog {
 	public override function onReady():Void {
 		super.onReady();
 		initializeUI();
+
+		// Wire up preview switch
+		if (previewSwitch != null) {
+			previewSwitch.onChange = function(_) {
+				setShowEditorButtons(!previewSwitch.selected);
+			};
+		}
 	}
 
 	function initializeUI():Void {
@@ -116,19 +125,6 @@ class PageEditor extends Dialog {
 				componentList.addComponent(btn);
 			}
 
-			// Add preview/edit mode buttons
-			var btnBox = new HBox();
-			var previewBtn = new Button();
-			previewBtn.text = "Preview";
-			previewBtn.onClick = function(_) setShowEditorButtons(false);
-			btnBox.addComponent(previewBtn);
-
-			var editModeBtn = new Button();
-			editModeBtn.text = "Edit";
-			editModeBtn.onClick = function(_) setShowEditorButtons(true);
-			btnBox.addComponent(editModeBtn);
-
-			componentList.addComponent(btnBox);
 		}
 
 		// Wire up buttons
@@ -136,6 +132,9 @@ class PageEditor extends Dialog {
 			saveDraftBtn.onClick = function(_) saveDraft();
 		if (publishBtn != null)
 			publishBtn.onClick = function(_) publish();
+		if (previewSwitch != null) {
+			previewSwitch.selected = false;
+		}
 	}
 
 	/** Load a page for editing */

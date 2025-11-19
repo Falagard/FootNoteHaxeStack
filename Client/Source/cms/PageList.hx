@@ -72,12 +72,13 @@ class PageList extends VBox {
         pageTable = new TableView();
         pageTable.percentWidth = 100;
         pageTable.percentHeight = 100;
+        pageTable.percentContentWidth = 100;
         
         // Add columns
-        pageTable.addColumn("ID");
-        pageTable.addColumn("Slug");
-        pageTable.addColumn("Title");
-        pageTable.addColumn("Created");
+        pageTable.addColumn("ID").width = 80;
+        pageTable.addColumn("Slug").width = 100;
+        pageTable.addColumn("Title").width = 200;
+        pageTable.addColumn("Created").width = 200;
         
         // Initialize data source
         tableDataSource = new ArrayDataSource<Dynamic>();
