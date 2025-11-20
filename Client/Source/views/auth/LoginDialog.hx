@@ -27,6 +27,7 @@ class LoginDialog extends Dialog {
     var errorLabel:Label; // from XML
     var loginBtn:Button; // from XML
     var registerBtn:Button; // from XML
+    var cancelBtn:Button; // from XML
     var loggingInRow:haxe.ui.containers.HBox; // from XML
     var loggingInSpinner:haxe.ui.components.Progress; // from XML
     
@@ -35,12 +36,15 @@ class LoginDialog extends Dialog {
     public function new() {
         super();
         this.title = "Sign In";
-        this.closable = false; // Force login - can't be dismissed
+        this.closable = true; // Allow dialog to be closed
         this.buttons = null; // using internal buttons
         this.destroyOnClose = true;
 
         if (loginBtn != null) loginBtn.onClick = function(_) doLogin();
         if (registerBtn != null) registerBtn.onClick = function(_) showRegister();
+        if (cancelBtn != null) cancelBtn.onClick = function(_) {
+            this.hideDialog("cancel");
+        }
 
         // Focus email field after layout
         haxe.ui.Toolkit.callLater(function() {

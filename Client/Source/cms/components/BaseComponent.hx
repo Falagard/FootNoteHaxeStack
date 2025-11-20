@@ -4,6 +4,22 @@ import haxe.ui.core.Component;
 
 /** Base implementation for page components */
 class BaseComponent implements IPageComponent {
+        /**
+         * Register navigation prevention hook for this component.
+         * Override shouldPreventNavigation in subclasses as needed.
+         */
+        public function registerNavigationPrevention():Void {
+            state.PageNavigator.instance.addBeforeNavigateHook(function() {
+                return !shouldPreventNavigation();
+            });
+        }
+
+        /**
+         * Override in subclasses to block navigation (e.g. unsaved changes).
+         */
+        public function shouldPreventNavigation():Bool {
+            return false;
+        }
     var _id:String;
     var _type:String;
     var _props:Dynamic;
