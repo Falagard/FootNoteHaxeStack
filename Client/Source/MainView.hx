@@ -6,6 +6,7 @@ import haxe.ui.components.Label;
 import state.AppState;
 import components.Notifications;
 import cms.CmsManager;
+import CmsModels;
 import cms.PageList;
 import cms.PageEditor;
 
@@ -18,24 +19,52 @@ class MainView extends VBox {
 
 	var appState = AppState.instance;
 	var asyncServices = AppState.instance.asyncServices;
-	
+
 	var cmsManager:CmsManager;
 	var currentPageList:PageList;
 	var currentEditor:PageEditor;
 
+	// Page navigation
+	var pageNavigator:state.PageNavigator;
+	var pageRenderer:cms.PageRenderer;
+
 	public function new() {
 		super();
-		
+
 		// Initialize CMS manager
 		cmsManager = new CmsManager();
-		
+		pageRenderer = new cms.PageRenderer();
+
+		// Initialize PageNavigator
+		pageNavigator = new state.PageNavigator(appState, cmsManager, pageRenderer);
+
 		wireEvents();
-		
+
 		// Watch authentication state and update user display
 		appState.currentUser.watch(function(user) {
 			updateUserDisplay();
 		});
 		updateUserDisplay();
+
+		// Listen for navigation events to update UI
+		pageNavigator.onNavigate.push(function() {
+			renderActivePage();
+		});
+	}
+	/** Render the active page using PageNavigator */
+	private function renderActivePage():Void {
+		contentPlaceholder.removeAllComponents();
+		var pageIdInt = Std.parseInt(pageNavigator.currentPage);
+		cmsManager.getPage(pageIdInt, function(response:GetPageResponse) {
+			if (response.success && response.page != null) {
+				var rendered = pageRenderer.renderPage(response.page, pageNavigator.currentAnchor);
+				contentPlaceholder.addComponent(rendered);
+			} else {
+				var errorLabel = new haxe.ui.components.Label();
+				errorLabel.text = "Failed to load page.";
+				contentPlaceholder.addComponent(errorLabel);
+			}
+		});
 	}
 
 	private function updateUserDisplay():Void {

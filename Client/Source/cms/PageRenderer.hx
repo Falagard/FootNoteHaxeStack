@@ -13,10 +13,15 @@ class PageRenderer {
     
     /** Render a complete page version */
     public function render(page:PageVersionDTO):Component {
+        return renderPage(page, null);
+    }
+
+    /** Render page and optionally scroll to anchor */
+    public function renderPage(page:PageVersionDTO, ?anchor:String):Component {
         var root = new VBox();
         root.percentWidth = 100;
         root.percentHeight = 100;
-        
+
         // Add title if present
         if (page.title != null && page.title != "") {
             var titleLabel = new Label();
@@ -24,14 +29,19 @@ class PageRenderer {
             titleLabel.styleNames = "pageTitle";
             root.addComponent(titleLabel);
         }
-        
+
+        var anchorComponent:Component = null;
         // Render all components
         if (page.components != null) {
             for (compDTO in page.components) {
                 try {
                     var comp = ComponentFactory.fromDTO(compDTO);
                     var node = comp.render();
+                    node.id = Std.string(compDTO.id);
                     root.addComponent(node);
+                    if (anchor != null && Std.string(compDTO.id) == anchor) {
+                        anchorComponent = node;
+                    }
                 } catch (e:Dynamic) {
                     trace('Error rendering component ${compDTO.id}: $e');
                     var errorLabel = new Label();
@@ -41,7 +51,19 @@ class PageRenderer {
                 }
             }
         }
-        
+
+        // Scroll to anchor if specified
+        #if html5
+        if (anchorComponent != null) {
+            haxe.ui.Toolkit.callLater(function() {
+                var el = js.Browser.document.getElementById(anchorComponent.id);
+                if (el != null && Reflect.hasField(el, "scrollIntoView")) {
+                    untyped el.scrollIntoView();
+                }
+            });
+        }
+        #end
+
         return root;
     }
     

@@ -16,6 +16,10 @@ class AppState {
     public var authToken:Observable<Null<String>> = new Observable<Null<String>>(null);
     public var isAuthenticated(get, never):Bool;
 
+    // Navigation state
+    public var currentPage:String = "";
+    public var currentAnchor:String = null;
+
     private function new() {
         services = ServiceRegistry.instance;
         asyncServices = AsyncServiceRegistry.instance;
