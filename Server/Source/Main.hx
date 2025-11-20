@@ -201,6 +201,27 @@ class Main extends Application {
 			next();
 		});
 
+        // Middleware: redirect bots from SPA client URLs to SEO page
+		App.use((req, res, next) -> {
+			var botRegex = ~/bot|crawl|spider|slurp|bing|duckduck|baidu|yandex|sogou|exabot|facebot|ia_archiver/i;
+			var userAgent = req.headers.get("User-Agent");
+			var spaMatch = ~/^\/static\/client\/index\.html#(.+)/;
+			if (userAgent != null && botRegex.match(userAgent) && spaMatch.match(req.path)) {
+				var pageId = spaMatch.matched(1);
+				var cms:ICmsService = cast DI.get(ICmsService);
+				var pageResp = cms.getPage(Std.parseInt(pageId));
+				var slug = pageResp != null && pageResp.success && pageResp.page != null && Reflect.hasField(pageResp.page, "slug") ? Reflect.field(pageResp.page, "slug") : pageId;
+				var seoUrl = '/seo/' + slug;
+				res.sendResponse(HTTPStatus.FOUND); // 302
+				res.setHeader("Location", seoUrl);
+				res.endHeaders();
+				res.write('Redirecting bot to SEO page...');
+				res.end();
+				return;
+			}
+			next();
+		});
+
 		// Custom login endpoint to set HttpOnly cookie
 		router.add("POST", "/api/auth/login", (req:Request, res:Response) -> {
 			try {
