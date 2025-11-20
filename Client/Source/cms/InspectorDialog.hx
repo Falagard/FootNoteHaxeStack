@@ -121,7 +121,8 @@ class InspectorDialog extends Dialog {
 				for (page in response.pages) {
 					pageOptions.push({
 						value: page.id,
-						text: page.title
+						text: page.title,
+						slug: page.slug != null ? page.slug : ""
 					});
 				}
 				pageDrop.dataSource = haxe.ui.data.ArrayDataSource.fromArray(pageOptions);
@@ -130,6 +131,10 @@ class InspectorDialog extends Dialog {
 					for (opt in pageOptions) {
 						if (opt.value == dto.data.pageId) {
 							pageDrop.selectedItem = opt;
+							// Also set slug if present
+							if (opt.slug != null) {
+								dto.data.pageSlug = opt.slug;
+							}
 							break;
 						}
 					}
@@ -140,6 +145,7 @@ class InspectorDialog extends Dialog {
 			var selected = pageDrop.selectedItem;
 			if (selected != null) {
 				dto.data.pageId = selected.value;
+				dto.data.pageSlug = selected.slug != null ? selected.slug : "";
 				editorComp.refresh();
 			}
 		};

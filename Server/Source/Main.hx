@@ -78,24 +78,7 @@ class Main extends Application {
 
 		// SEO HTML for bots
 		router.add("GET", "/seo/:slug", (req:Request, res:Response) -> {
-			// var userAgent = req.headers.get("User-Agent");
-			// var isBot = false;
-			// if (userAgent != null) {
-			// 	var botAgents = ["Googlebot", "Bingbot", "Slurp", "DuckDuckBot", "Baiduspider", "YandexBot", "Sogou", "Exabot", "facebot", "ia_archiver"];
-			// 	for (agent in botAgents) {
-			// 		if (userAgent.indexOf(agent) != -1) {
-			// 			isBot = true;
-			// 			break;
-			// 		}
-			// 	}
-			// }
-			// if (!isBot) {
-			// 	res.sendResponse(HTTPStatus.NOT_FOUND);
-			// 	res.endHeaders();
-			// 	res.write("Not found");
-			// 	res.end();
-			// 	return;
-			// }
+
 			var slug = req.params.get("slug");
 			var cms:ICmsService = cast DI.get(ICmsService);
 			var pageResp = cms.getPageBySlug(slug, true);
@@ -107,23 +90,39 @@ class Main extends Application {
 				return;
 			}
 			var page = pageResp.page;
-			var html = '<!DOCTYPE html>';
-			html += '<html lang="en">';
-			html += '<head>';
-			html += '<meta charset="UTF-8">';
-			html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-			html += '<title>' + page.title + '</title>';
-			html += '<meta name="description" content="' + page.title + '" />';
-			html += '<meta name="robots" content="index, follow" />';
-			html += '</head>';
-			html += '<body>';
-			html += page.seoHtml;
-			html += '</body></html>';
-			res.sendResponse(HTTPStatus.OK);
-			res.setHeader("Content-Type", "text/html; charset=UTF-8");
-			res.endHeaders();
-			res.write(html);
-			res.end();
+			// Bot detection via User-Agent
+			var userAgent = req.headers.get("User-Agent");
+			var botRegex = ~/bot|crawl|spider|slurp|bing|duckduck|baidu|yandex|sogou|exabot|facebot|ia_archiver/i;
+
+			if (userAgent != null && botRegex.match(userAgent)) {
+				// Serve SEO HTML for bots
+				var html = '<!DOCTYPE html>';
+				html += '<html lang="en">';
+				html += '<head>';
+				html += '<meta charset="UTF-8">';
+				html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+				html += '<title>' + page.title + '</title>';
+				html += '<meta name="description" content="' + page.title + '" />';
+				html += '<meta name="robots" content="index, follow" />';
+				html += '</head>';
+				html += '<body>';
+				html += page.seoHtml;
+				html += '</body></html>';
+				res.sendResponse(HTTPStatus.OK);
+				res.setHeader("Content-Type", "text/html; charset=UTF-8");
+				res.endHeaders();
+				res.write(html);
+				res.end();
+			} else {
+				// Redirect non-bots to SPA client with #pageid
+				var pageId:String = (Reflect.hasField(page, "pageId") && Std.isOfType(page.pageId, Int)) ? Std.string(page.pageId) : slug;
+				var redirectUrl = '/static/client/index.html#' + pageId;
+				res.sendResponse(HTTPStatus.FOUND); // 302
+				res.setHeader("Location", redirectUrl);
+				res.endHeaders();
+				res.write('Redirecting to SPA...');
+				res.end();
+			}
 		});
 
 		// Example middleware: logging

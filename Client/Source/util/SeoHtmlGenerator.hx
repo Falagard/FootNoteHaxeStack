@@ -16,7 +16,9 @@ class SeoHtmlGenerator {
                 case "image":
                     html.add('<img src="' + escapeHtml(component.data.url) + '" alt="' + escapeHtml(component.data.alt) + '" />');
                 case "button":
-                    html.add('<a href="#" class="button">' + escapeHtml(component.data.label) + '</a>');
+                    var slug = component.data.pageSlug;
+                    var link = slug != null && slug != "" ? '/seo/' + escapeHtml(slug) : '#';
+                    html.add('<a href="' + link + '" class="button">' + escapeHtml(component.data.label) + '</a>');
                 default:
                     // Ignore non-SEO components
             }
