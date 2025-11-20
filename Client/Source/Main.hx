@@ -49,10 +49,6 @@ class Main {
             Notifications.init(mainView);
             // ModalManager removed; dialogs use Screen overlay by default
             
-            // Initialize authentication
-            var authManager = new AuthManager(mainView);
-            authManager.checkAuthentication();
-            
             app.start();
         });
     }

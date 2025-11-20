@@ -22,54 +22,55 @@ class AuthManager {
     
     /**
      * Check if user is authenticated, show login if not
-     * Returns true if already authenticated
+     * Calls callback after successful login or token verification
      */
-    public function checkAuthentication():Bool {
+    public function checkAuthentication(?onAuthenticated:Void->Void):Bool {
         // Try to load stored token
         var storedToken = appState.loadStoredToken();
         if (storedToken != null) {
             // Verify the stored token is still valid
-            verifyStoredToken(storedToken);
+            verifyStoredToken(storedToken, onAuthenticated);
             // Assume valid for now, will update if verification fails
             return true;
         }
-        
         // No stored token, show login
-        showLogin();
+        showLogin(onAuthenticated);
         return false;
     }
     
-    function verifyStoredToken(token:String):Void {
+    function verifyStoredToken(token:String, ?onAuthenticated:Void->Void):Void {
         // Call getCurrentUser to verify the token
         untyped appState.asyncServices.auth.getCurrentUserAsync(function(user:Null<UserPublic>) {
             if (user != null) {
                 // Token is valid, update app state
                 appState.setAuthentication(user, token);
                 Notifications.show('Welcome back, ' + (user.username != null ? user.username : user.email), 'info');
+                if (onAuthenticated != null) onAuthenticated();
             } else {
                 // Token invalid, clear it and show login
                 appState.clearAuthentication();
-                showLogin();
+                showLogin(onAuthenticated);
             }
         }, function(err:Dynamic) {
             // Token verification failed, clear and show login
             trace('Token verification failed: ' + err);
             appState.clearAuthentication();
-            showLogin();
+            showLogin(onAuthenticated);
         });
     }
     
-    public function showLogin():Void {
+    public function showLogin(?onLogin:Void->Void):Void {
         if (loginDialog != null) return; // already showing
-        
+
         loginDialog = new LoginDialog();
         loginDialog.dialogParent = parentComponent;
-        
+
         loginDialog.onLoginSuccess = function(user:UserPublic, token:String) {
             appState.setAuthentication(user, token);
             loginDialog = null;
+            if (onLogin != null) onLogin();
         };
-        
+
         loginDialog.onRegisterRequested = function() {
             // Close login and show registration
             var emailOrUsername = "";
@@ -83,7 +84,7 @@ class AuthManager {
             }
             showRegisterWithPrefill(emailOrUsername, password);
         };
-        
+
         loginDialog.showDialog(true);
     }
     

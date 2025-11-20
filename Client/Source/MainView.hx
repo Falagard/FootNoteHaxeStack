@@ -50,6 +50,9 @@ class MainView extends VBox {
 		pageNavigator.onNavigate.push(function() {
 			renderActivePage();
 		});
+
+		// Immediately navigate to page 1
+		pageNavigator.navigate("3", null);
 	}
 	/** Render the active page using PageNavigator */
 	private function renderActivePage():Void {
@@ -77,15 +80,42 @@ class MainView extends VBox {
 				userLabel.text = "";
 			}
 		}
+
+		// Show/hide CMS button based on authentication
+		if (cmsBtn != null) {
+			cmsBtn.visible = appState.isAuthenticated;
+		}
+
+		// Change logout button to login button if not authenticated
+		if (logoutBtn != null) {
+			if (!appState.isAuthenticated) {
+				logoutBtn.text = "Login";
+				logoutBtn.onClick = function(_) {
+					var authManager = new views.auth.AuthManager(this);
+					authManager.showLogin(function() {
+						updateUserDisplay();
+					});
+				};
+			} else {
+				logoutBtn.text = "Logout";
+				logoutBtn.onClick = function(_) {
+					handleLogout();
+				};
+			}
+		}
 	}
 
 	private function wireEvents():Void {
 		if (logoutBtn != null) logoutBtn.onClick = function(_) {
 			handleLogout();
 		};
-		
+
 		if (cmsBtn != null) cmsBtn.onClick = function(_) {
-			showCMS();
+			// Use AuthManager.checkAuthentication with callback
+			var authManager = new views.auth.AuthManager(this);
+			authManager.checkAuthentication(function() {
+				showCMS();
+			});
 		};
 	}
 
