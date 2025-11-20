@@ -124,6 +124,18 @@ class MenuService implements IMenuService {
 		var sql = "INSERT INTO menu_items (menu_id, parent_id, title, page_id, external_url, sort_order) VALUES (@menu_id, @parent_id, @title, @page_id, @external_url, @sort_order)";
 		conn.request(Database.buildSql(sql, params));
 		var id = conn.lastInsertId();
+        // Save components if provided
+        if (item.components != null) {
+            for (component in item.components) {
+                var compParams = new Map<String, Dynamic>();
+                compParams.set("menu_item_id", id);
+                compParams.set("sort_order", component.sortOrder);
+                compParams.set("type", component.type);
+                compParams.set("data_json", Json.stringify(component.data));
+                var compSql = "INSERT INTO menu_item_components (menu_item_id, sort_order, type, data_json) VALUES (@menu_item_id, @sort_order, @type, @data_json)";
+                conn.request(Database.buildSql(compSql, compParams));
+            }
+        }
 		Database.release(conn);
 		return id;
 	}
@@ -140,6 +152,22 @@ class MenuService implements IMenuService {
 		params.set("sort_order", item.sortOrder);
 		var sql = "UPDATE menu_items SET menu_id = @menu_id, parent_id = @parent_id, title = @title, page_id = @page_id, external_url = @external_url, sort_order = @sort_order WHERE id = @id";
 		conn.request(Database.buildSql(sql, params));
+		// Update components: delete old, insert new
+		var delSql = "DELETE FROM menu_item_components WHERE menu_item_id = @menu_item_id";
+		var delParams = new Map<String, Dynamic>();
+		delParams.set("menu_item_id", menuItemId);
+		conn.request(Database.buildSql(delSql, delParams));
+		if (item.components != null) {
+			for (component in item.components) {
+				var compParams = new Map<String, Dynamic>();
+				compParams.set("menu_item_id", menuItemId);
+				compParams.set("sort_order", component.sortOrder);
+				compParams.set("type", component.type);
+				compParams.set("data_json", Json.stringify(component.data));
+				var compSql = "INSERT INTO menu_item_components (menu_item_id, sort_order, type, data_json) VALUES (@menu_item_id, @sort_order, @type, @data_json)";
+				conn.request(Database.buildSql(compSql, compParams));
+			}
+		}
 		Database.release(conn);
 		return true;
 	}
@@ -198,6 +226,24 @@ class MenuService implements IMenuService {
 	}
 
 	private function buildMenuItemDTO(item:Dynamic):MenuItemDTO {
+		// Load components for this menu item
+		var conn = Database.acquire();
+		var compParams = new Map<String, Dynamic>();
+		compParams.set("menu_item_id", Std.int(item.id));
+		var compSql = "SELECT * FROM menu_item_components WHERE menu_item_id = @menu_item_id ORDER BY sort_order ASC";
+		var compRs = conn.request(Database.buildSql(compSql, compParams));
+		var components = [];
+		while (compRs.hasNext()) {
+			var comp = compRs.next();
+			components.push({
+				id: Std.int(comp.id),
+				menuItemId: Std.int(comp.menu_item_id),
+				sortOrder: Std.int(comp.sort_order),
+				type: Std.string(comp.type),
+				data: haxe.Json.parse(comp.data_json)
+			});
+		}
+		Database.release(conn);
 		return {
 			id: Std.int(item.id),
 			menuId: Std.int(item.menu_id),
@@ -207,7 +253,8 @@ class MenuService implements IMenuService {
 			externalUrl: item.external_url,
 			sortOrder: item.sort_order != null ? Std.int(item.sort_order) : 0,
 			createdAt: Date.fromString(item.created_at),
-			children: []
+			children: [],
+			components: components
 		};
 	}
 }

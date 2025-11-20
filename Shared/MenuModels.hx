@@ -1,6 +1,15 @@
+
 package;
 
 import Date;
+
+typedef MenuItemComponentDTO = {
+	id:Int,
+	menuItemId:Int,
+	sortOrder:Int,
+	type:String,
+	data:Dynamic
+};
 
 typedef MenuDTO = {
 	id:Int,
@@ -19,4 +28,5 @@ typedef MenuItemDTO = {
 	sortOrder:Int,
 	createdAt:Date,
 	children:Array<MenuItemDTO>
+    ,components:Array<MenuItemComponentDTO>
 };
