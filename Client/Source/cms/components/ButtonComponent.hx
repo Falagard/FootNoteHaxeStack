@@ -11,20 +11,24 @@ class ButtonComponent extends BaseComponent {
         super(id, "button");
         if (_props.text == null) _props.text = "Click Me";
         if (_props.action == null) _props.action = "#";
+        if (_props.pageId == null) _props.pageId = null; // navigation target
     }
     
     override public function render():Component {
         var box = new HBox();
         box.percentWidth = 100;
-        
+
         var btn = new Button();
         btn.text = Std.string(_props.text != null ? _props.text : "Button");
-        
-        // In a real app, you'd handle the action (navigation, etc.)
+
         btn.onClick = function(_) {
-            trace("Button clicked: " + _props.action);
+            if (_props.pageId != null) {
+                state.PageNavigator.instance.navigate(Std.string(_props.pageId), null);
+            } else {
+                trace("Button clicked: " + _props.action);
+            }
         };
-        
+
         box.addComponent(btn);
         return box;
     }

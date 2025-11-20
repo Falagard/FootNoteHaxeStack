@@ -183,10 +183,7 @@ class Main extends Application {
 					}); // 7 days
 					// TODO: Add Secure when serving over HTTPS
 					res.endHeaders();
-					res.write(haxe.Json.stringify({
-						success: true,
-						user: result.user
-					}));
+					res.write(haxe.Json.stringify(result));
 					res.end();
 				} else {
 					res.sendResponse(HTTPStatus.UNAUTHORIZED);

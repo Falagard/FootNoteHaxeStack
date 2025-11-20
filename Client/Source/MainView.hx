@@ -85,7 +85,8 @@ class MainView extends VBox {
 
 		// Show/hide CMS button based on authentication
 		if (cmsBtn != null) {
-			cmsBtn.hidden = !appState.isAuthenticated;
+            var isAuthenticated = appState.isAuthenticated;
+			cmsBtn.hidden = !isAuthenticated;
 		}
 
 		// Change logout button to login button if not authenticated
@@ -95,7 +96,7 @@ class MainView extends VBox {
 				logoutBtn.onClick = function(_) {
 					var authManager = new views.auth.AuthManager(this);
 					authManager.showLogin(function() {
-						updateUserDisplay();
+						updateUserDisplay(); // Show CMS button after login
 					});
 				};
 			} else {

@@ -1,5 +1,6 @@
 package cms;
 
+import state.PageNavigator;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.components.Label;
 import haxe.ui.components.Button;
@@ -101,11 +102,45 @@ class InspectorDialog extends Dialog {
 		var labelField = new haxe.ui.components.TextField();
 		labelField.text = dto.data.label != null ? dto.data.label : "Button";
 		labelField.percentWidth = 100;
-		// labelField.prompt = "Button Label"; // Not supported in Haxe UI
 		labelField.onChange = function(_) {
 			dto.data.label = labelField.text;
 			editorComp.refresh();
 		};
 		inspectorContent.addComponent(labelField);
+
+		// Dropdown for page navigation target
+		var pageDrop = new haxe.ui.components.DropDown();
+		pageDrop.percentWidth = 100;
+		//.prompt = "Navigate to page...";
+		// Fetch all pages from CmsManager
+		PageNavigator.instance.cmsManager.listPages(function(response:CmsModels.ListPagesResponse) {
+			if (response.success && response.pages != null) {
+				var pageOptions = [];
+				for (page in response.pages) {
+					pageOptions.push({
+						id: page.id,
+						title: page.title
+					});
+				}
+				pageDrop.dataSource = haxe.ui.data.ArrayDataSource.fromArray(pageOptions);
+				// Set selected item if already set
+				if (dto.data.pageId != null) {
+					for (opt in pageOptions) {
+						if (opt.id == dto.data.pageId) {
+							pageDrop.selectedItem = opt;
+							break;
+						}
+					}
+				}
+			}
+		});
+		pageDrop.onChange = function(_) {
+			var selected = pageDrop.selectedItem;
+			if (selected != null) {
+				dto.data.pageId = selected.id;
+				editorComp.refresh();
+			}
+		};
+		inspectorContent.addComponent(pageDrop);
 	}
 }
