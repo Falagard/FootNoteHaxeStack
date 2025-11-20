@@ -24,6 +24,8 @@ class MainView extends VBox {
 	var currentPageList:PageList;
 	var currentEditor:PageEditor;
 
+	var authManager:views.auth.AuthManager;
+
 	// Page navigation
 	var pageNavigator:state.PageNavigator;
 	var pageRenderer:cms.PageRenderer;
@@ -37,6 +39,8 @@ class MainView extends VBox {
 
 		// Initialize PageNavigator
 		pageNavigator = new state.PageNavigator(appState, cmsManager, pageRenderer);
+
+		authManager = new views.auth.AuthManager(this);
 
 		wireEvents();
 
@@ -94,7 +98,6 @@ class MainView extends VBox {
 			if (!appState.isAuthenticated) {
 				logoutBtn.text = "Login";
 				logoutBtn.onClick = function(_) {
-					var authManager = new views.auth.AuthManager(this);
 					authManager.showLogin(function() {
 						updateUserDisplay(); // Show CMS button after login
 					});
@@ -114,11 +117,7 @@ class MainView extends VBox {
 		};
 
 		if (cmsBtn != null) cmsBtn.onClick = function(_) {
-			// Use AuthManager.checkAuthentication with callback
-			var authManager = new views.auth.AuthManager(this);
-			authManager.checkAuthentication(function() {
-				showCMS();
-			});
+            showCMS();
 		};
 	}
 
@@ -139,19 +138,35 @@ class MainView extends VBox {
 		});
 	}
 	
-	/** Show the CMS page list */
+	/** Show the CMS page list with Back button */
+	private var lastPage:String = null;
+	private var lastAnchor:String = null;
 	private function showCMS():Void {
+		// Store current page and anchor before showing CMS
+		lastPage = pageNavigator.currentPage;
+		lastAnchor = pageNavigator.currentAnchor;
+
 		// Clear current content
 		contentPlaceholder.removeAllComponents();
-		
+
+		// Create Back button
+		var backBtn = new Button();
+		backBtn.text = "Back";
+		backBtn.onClick = function(_) {
+			if (lastPage != null) {
+				pageNavigator.navigate(lastPage, lastAnchor);
+			}
+		};
+		contentPlaceholder.addComponent(backBtn);
+
 		// Create and show page list
 		currentPageList = new PageList(cmsManager);
-		
+
 		// Handle edit page request
 		currentPageList.onEditPage = function(pageId:Int) {
 			showPageEditor(pageId);
 		};
-		
+
 		contentPlaceholder.addComponent(currentPageList);
 	}
 	

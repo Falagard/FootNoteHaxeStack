@@ -55,6 +55,9 @@ class AppState {
     }
 
     public function loadStoredToken():Null<String> {
+        if (authToken.value != null) {
+            return authToken.value;
+        }
         #if js
         try {
             return js.Browser.window.localStorage.getItem("authToken");
