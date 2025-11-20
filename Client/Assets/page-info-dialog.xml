@@ -1,0 +1,14 @@
+<dialog width="400" height="220">
+    <vbox padding="20">
+        <label text="Edit Page Information" style="font-weight: bold; font-size: 18px;" />
+        <label text="Title:" />
+        <textfield id="titleField" percentWidth="100" />
+        <label text="Slug:" />
+        <textfield id="slugField" percentWidth="100" />
+        <label id="errorLabel" text="" style="color: red;" />
+        <hbox horizontalAlign="right">
+            <button id="saveBtn" text="Save" width="80" />
+            <button id="cancelBtn" text="Cancel" width="80" />
+        </hbox>
+    </vbox>
+</dialog>

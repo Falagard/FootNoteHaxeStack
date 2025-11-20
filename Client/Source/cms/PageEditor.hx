@@ -84,10 +84,12 @@ class PageEditor extends Dialog {
 	var pageTitle:Label;
 	var saveDraftBtn:Button;
 	var publishBtn:Button;
+	var editPageInfoBtn:Button; // new button for editing page info
 
 	// Data
 	var cmsManager:CmsManager;
 	var currentPage:PageVersionDTO;
+	var pageSlug:String = ""; // store slug locally
 	var editorComponents:Array<EditorComponent> = [];
 	var selectedComponent:EditorComponent;
 
@@ -124,7 +126,6 @@ class PageEditor extends Dialog {
 				btn.onClick = function(_) addNewComponent(Std.string(btn.userData));
 				componentList.addComponent(btn);
 			}
-
 		}
 
 		// Wire up buttons
@@ -132,9 +133,28 @@ class PageEditor extends Dialog {
 			saveDraftBtn.onClick = function(_) saveDraft();
 		if (publishBtn != null)
 			publishBtn.onClick = function(_) publish();
+		if (editPageInfoBtn != null) {
+			var self = this;
+			editPageInfoBtn.onClick = function(_) self.showEditPageInfoDialog();
+		}
 		if (previewSwitch != null) {
 			previewSwitch.selected = false;
 		}
+	}
+
+	public function showEditPageInfoDialog():Void {
+		if (currentPage == null)
+			return;
+		var dlg = new PageInfoDialog(currentPage.title, pageSlug);
+		dlg.onSave = function(newTitle:String, newSlug:String) {
+			currentPage.title = newTitle;
+			pageSlug = newSlug;
+			if (pageTitle != null)
+				pageTitle.text = newTitle;
+			// Optionally, save immediately or require explicit saveDraft
+		};
+		dlg.onCancel = function() {};
+		dlg.showDialog();
 	}
 
 	/** Load a page for editing */
@@ -142,6 +162,12 @@ class PageEditor extends Dialog {
 		cmsManager.getPage(pageId, function(response:GetPageResponse) {
 			if (response.success && response.page != null) {
 				currentPage = response.page;
+				// Try to get slug from response.page if present
+				if (Reflect.hasField(response.page, "slug")) {
+					pageSlug = Reflect.field(response.page, "slug");
+				} else {
+					pageSlug = "";
+				}
 				hydrateEditor();
 				pageTitle.text = currentPage.title;
 			}
@@ -187,7 +213,7 @@ class PageEditor extends Dialog {
 			components.push(ec.dto);
 		}
 
-		cmsManager.updatePage(currentPage.pageId, currentPage.title, currentPage.layout, components, function(response:UpdatePageResponse) {
+		cmsManager.updatePage(currentPage.pageId, currentPage.title, currentPage.layout, components, pageSlug, function(response:UpdatePageResponse) {
 			if (response.success) {
 				// Reload to get updated version info
 				loadPage(currentPage.pageId);

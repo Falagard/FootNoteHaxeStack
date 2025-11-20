@@ -7,6 +7,38 @@ import haxe.Json;
 class PageSerializer {
 	public function new() {}
 
+	public function updatePageSlug(pageId:Int, slug:String):Bool {
+		// Validate slug format (only allow a-z, 0-9, dash, underscore, min 3 chars)
+		var slugRegex = ~/^[a-z0-9_-]{3,}$/i;
+		if (!slugRegex.match(slug)) {
+			return false;
+		}
+		var conn = Database.acquire();
+		try {
+			// Check for duplicate slug (exclude current page)
+			var params = new Map<String, Dynamic>();
+			params.set("slug", slug);
+			params.set("pageId", pageId);
+			var sql = "SELECT id FROM pages WHERE slug = @slug AND id != @pageId";
+			var rs = conn.request(Database.buildSql(sql, params));
+			if (rs.hasNext()) {
+				Database.release(conn);
+				return false; // Duplicate found
+			}
+			// Update slug
+			params = new Map<String, Dynamic>();
+			params.set("pageId", pageId);
+			params.set("slug", slug);
+			sql = "UPDATE pages SET slug = @slug WHERE id = @pageId";
+			conn.request(Database.buildSql(sql, params));
+			Database.release(conn);
+			return true;
+		} catch (e:Dynamic) {
+			Database.release(conn);
+			return false;
+		}
+	}
+
 	public function savePageVersion(page:PageDTO, ?userId:String, ?seoHtml:String):Int {
 		var conn = Database.acquire();
 		try {
@@ -45,11 +77,13 @@ class PageSerializer {
 				conn.request(Database.buildSql(sql, params));
 			}
 
-			// Update Page latest_version_id
+
+			// Update Page latest_version_id and title
 			params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
 			params.set("pageId", page.pageId);
-			sql = "UPDATE pages SET latest_version_id = @versionId WHERE id = @pageId";
+			params.set("title", page.title);
+			sql = "UPDATE pages SET latest_version_id = @versionId, title = @title WHERE id = @pageId";
 			conn.request(Database.buildSql(sql, params));
 
 			Database.release(conn);

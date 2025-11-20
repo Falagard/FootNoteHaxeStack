@@ -45,8 +45,9 @@ typedef UpdatePageRequest = {
 	pageId:Int,
 	title:String,
 	layout:String,
-	components:Array<PageComponentDTO>
-    ,?seoHtml:String
+	components:Array<PageComponentDTO>,
+	slug:String,
+	?seoHtml:String
 };
 
 typedef UpdatePageResponse = {

@@ -13,6 +13,7 @@
       <hbox percentWidth="100">
         <label id="pageTitle" text="Page Editor" styleName="panelTitle" />
         <spacer percentWidth="100" />
+        <button id="editPageInfoBtn" text="Edit Page Info" icon="icons/edit.png" />
         <switch id="previewSwitch" text="Preview Mode" />
         <button id="saveDraftBtn" text="Save Draft" icon="icons/save.png" />
         <button id="publishBtn" text="Publish" icon="icons/publish.png" />

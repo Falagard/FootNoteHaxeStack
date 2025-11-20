@@ -31,6 +31,28 @@ class CmsService implements ICmsService {
 				return {success: false, error: "Title is required"};
 			}
 
+			// Validate slug format (only allow a-z, 0-9, dash, underscore, min 3 chars)
+			var slugRegex = ~/^[a-z0-9_-]{3,}$/i;
+			if (!slugRegex.match(request.slug)) {
+				return {success: false, error: "Invalid slug format"};
+			}
+			// Check for duplicate slug
+			var conn = sidewinder.Database.acquire();
+			try {
+				var params = new Map<String, Dynamic>();
+				params.set("slug", request.slug);
+				var sql = "SELECT id FROM pages WHERE slug = @slug";
+				var rs = conn.request(sidewinder.Database.buildSql(sql, params));
+				if (rs.hasNext()) {
+					sidewinder.Database.release(conn);
+					return {success: false, error: "Duplicate slug"};
+				}
+				sidewinder.Database.release(conn);
+			} catch (e:Dynamic) {
+				sidewinder.Database.release(conn);
+				return {success: false, error: "Error checking slug: " + Std.string(e)};
+			}
+
 			var layout = request.layout != null ? request.layout : "default";
 			var pageId = serializer.createPage(request.slug, request.title, layout, request.seoHtml);
 			return {success: true, pageId: pageId};
@@ -55,6 +77,18 @@ class CmsService implements ICmsService {
 					success: false,
 					error: "Validation failed: " + validationResult.errors.map(e -> e.message).join(", ")
 				};
+			}
+
+
+			// Update slug if provided
+			if (request.slug != null && request.slug.length > 0) {
+				var slugOk = serializer.updatePageSlug(id, request.slug);
+				if (!slugOk) {
+					return {
+						success: false,
+						error: "Invalid or duplicate slug"
+					};
+				}
 			}
 
 			var versionId = serializer.savePageVersion(pageDto, userId, request.seoHtml);

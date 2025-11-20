@@ -37,13 +37,14 @@ class CmsManager {
     }
     
     /** Update a page (creates new version) */
-    public function updatePage(pageId:Int, title:String, layout:String, components:Array<PageComponentDTO>, callback:UpdatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
+    public function updatePage(pageId:Int, title:String, layout:String, components:Array<PageComponentDTO>, slug:String, callback:UpdatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
         var seoHtml:String = SeoHtmlGenerator.generate(components);
         var request:UpdatePageRequest = {
             pageId: pageId,
             title: title,
             layout: layout,
             components: components,
+            slug: slug,
             seoHtml: seoHtml
         };
         
