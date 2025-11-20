@@ -38,6 +38,7 @@ import hx.injection.Service;
 using hx.injection.ServiceExtensions;
 
 class Main extends Application {
+			
 	private static final DEFAULT_PROTOCOL = "HTTP/1.0"; // snake-server needs more work for 1.1 connections
 	private static final DEFAULT_ADDRESS = "127.0.0.1";
 	private static final DEFAULT_PORT = 8000;
@@ -74,6 +75,56 @@ class Main extends Application {
 		cache = DI.get(ICacheService);
 
 		httpServer = new SideWinderServer(new Host(DEFAULT_ADDRESS), DEFAULT_PORT, SideWinderRequestHandler, true, directory);
+
+		// SEO HTML for bots
+		router.add("GET", "/seo/:slug", (req:Request, res:Response) -> {
+			// var userAgent = req.headers.get("User-Agent");
+			// var isBot = false;
+			// if (userAgent != null) {
+			// 	var botAgents = ["Googlebot", "Bingbot", "Slurp", "DuckDuckBot", "Baiduspider", "YandexBot", "Sogou", "Exabot", "facebot", "ia_archiver"];
+			// 	for (agent in botAgents) {
+			// 		if (userAgent.indexOf(agent) != -1) {
+			// 			isBot = true;
+			// 			break;
+			// 		}
+			// 	}
+			// }
+			// if (!isBot) {
+			// 	res.sendResponse(HTTPStatus.NOT_FOUND);
+			// 	res.endHeaders();
+			// 	res.write("Not found");
+			// 	res.end();
+			// 	return;
+			// }
+			var slug = req.params.get("slug");
+			var cms:ICmsService = cast DI.get(ICmsService);
+			var pageResp = cms.getPageBySlug(slug, true);
+			if (!pageResp.success || pageResp.page == null) {
+				res.sendResponse(HTTPStatus.NOT_FOUND);
+				res.endHeaders();
+				res.write("Page not found");
+				res.end();
+				return;
+			}
+			var page = pageResp.page;
+			var html = '<!DOCTYPE html>';
+			html += '<html lang="en">';
+			html += '<head>';
+			html += '<meta charset="UTF-8">';
+			html += '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+			html += '<title>' + page.title + '</title>';
+			html += '<meta name="description" content="' + page.title + '" />';
+			html += '<meta name="robots" content="index, follow" />';
+			html += '</head>';
+			html += '<body>';
+			html += page.seoHtml;
+			html += '</body></html>';
+			res.sendResponse(HTTPStatus.OK);
+			res.setHeader("Content-Type", "text/html; charset=UTF-8");
+			res.endHeaders();
+			res.write(html);
+			res.end();
+		});
 
 		// Example middleware: logging
 		App.use((req, res, next) -> {

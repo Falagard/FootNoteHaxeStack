@@ -2,6 +2,7 @@ package util;
 
 import CmsModels;
 import StringTools;
+import TextFieldMarkdown;
 
 class SeoHtmlGenerator {
     public static function generate(components:Array<PageComponentDTO>):String {
@@ -9,7 +10,9 @@ class SeoHtmlGenerator {
         for (component in components) {
             switch (component.type) {
                 case "text":
-                    html.add('<div>' + escapeHtml(component.data.text) + '</div>');
+                    var md = component.data.text;
+                    var htmlText = TextFieldMarkdown.markdownToHtml(md);
+                    html.add('<div>' + htmlText + '</div>');
                 case "image":
                     html.add('<img src="' + escapeHtml(component.data.url) + '" alt="' + escapeHtml(component.data.alt) + '" />');
                 case "button":
