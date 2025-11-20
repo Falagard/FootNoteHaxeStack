@@ -97,7 +97,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
-			var sql = "SELECT id, page_id, version_num, title, layout, created_at, created_by, seo_html FROM page_versions WHERE id = @versionId";
+			var sql = "SELECT id, page_id, version_num, title, layout, slug, created_at, created_by, seo_html FROM page_versions WHERE id = @versionId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -110,6 +110,7 @@ class PageLoader {
 				versionNum: Std.int(Reflect.field(v, "version_num")),
 				title: Std.string(Reflect.field(v, "title")),
 				layout: Std.string(Reflect.field(v, "layout")),
+				slug: Std.string(Reflect.field(v, "slug")),
 				createdAt: Date.fromString(Std.string(Reflect.field(v, "created_at"))),
 				createdBy: Std.string(Reflect.field(v, "created_by")),
 				components: [],

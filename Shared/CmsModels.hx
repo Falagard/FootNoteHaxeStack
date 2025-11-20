@@ -15,6 +15,7 @@ typedef PageVersionDTO = {
 	versionNum:Int,
 	title:String,
 	layout:String,
+	slug:String,
 	createdAt:Date,
 	createdBy:String,
 	components:Array<PageComponentDTO>,
@@ -25,6 +26,7 @@ typedef PageDTO = {
 	pageId:Int,
 	title:String,
 	layout:String,
+	slug:String,
 	components:Array<PageComponentDTO>
 };
 

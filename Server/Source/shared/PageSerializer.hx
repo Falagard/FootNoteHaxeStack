@@ -7,7 +7,7 @@ import haxe.Json;
 class PageSerializer {
 	public function new() {}
 
-	public function updatePageSlug(pageId:Int, slug:String):Bool {
+	public function updatePageMeta(pageId:Int, title:String, slug:String):Bool {
 		// Validate slug format (only allow a-z, 0-9, dash, underscore, min 3 chars)
 		var slugRegex = ~/^[a-z0-9_-]{3,}$/i;
 		if (!slugRegex.match(slug)) {
@@ -25,11 +25,12 @@ class PageSerializer {
 				Database.release(conn);
 				return false; // Duplicate found
 			}
-			// Update slug
+			// Update title and slug
 			params = new Map<String, Dynamic>();
 			params.set("pageId", pageId);
+			params.set("title", title);
 			params.set("slug", slug);
-			sql = "UPDATE pages SET slug = @slug WHERE id = @pageId";
+			sql = "UPDATE pages SET title = @title, slug = @slug WHERE id = @pageId";
 			conn.request(Database.buildSql(sql, params));
 			Database.release(conn);
 			return true;
@@ -59,9 +60,10 @@ class PageSerializer {
 			params.set("versionNum", nextVer);
 			params.set("title", page.title);
 			params.set("layout", page.layout);
+			params.set("slug", page.slug);
 			params.set("createdBy", userId);
 			params.set("seoHtml", seoHtml);
-			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, created_by, seo_html) VALUES (@pageId, @versionNum, @title, @layout, @createdBy, @seoHtml)";
+			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, slug, created_by, seo_html) VALUES (@pageId, @versionNum, @title, @layout, @slug, @createdBy, @seoHtml)";
 			conn.request(Database.buildSql(sql, params));
 			var versionId = conn.lastInsertId();
 
@@ -109,6 +111,7 @@ class PageSerializer {
 				pageId: pageId,
 				title: title,
 				layout: layout,
+				slug: slug,
 				components: []
 			};
 			savePageVersion(page, null, seoHtml);

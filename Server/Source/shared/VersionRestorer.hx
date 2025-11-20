@@ -27,6 +27,7 @@ class VersionRestorer {
 			pageId: v.pageId,
 			title: v.title,
 			layout: v.layout,
+            slug: v.slug,
 			components: []
 		};
 		for (c in v.components) {

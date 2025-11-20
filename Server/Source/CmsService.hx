@@ -68,6 +68,7 @@ class CmsService implements ICmsService {
 				pageId: id,
 				title: request.title,
 				layout: request.layout,
+                slug: request.slug,
 				components: request.components
 			};
 
@@ -80,16 +81,7 @@ class CmsService implements ICmsService {
 			}
 
 
-			// Update slug if provided
-			if (request.slug != null && request.slug.length > 0) {
-				var slugOk = serializer.updatePageSlug(id, request.slug);
-				if (!slugOk) {
-					return {
-						success: false,
-						error: "Invalid or duplicate slug"
-					};
-				}
-			}
+			// Do not update slug/title on draft save
 
 			var versionId = serializer.savePageVersion(pageDto, userId, request.seoHtml);
 			
@@ -136,7 +128,14 @@ class CmsService implements ICmsService {
 
 	public function publishVersion(pageId:Int, versionId:Int, userId:String):CreatePageResponse {
 		try {
+			// Publish the version
 			serializer.publishVersion(pageId, versionId);
+
+			// Get published version details
+			var publishedVersion = loader.loadVersion(versionId);
+
+		    serializer.updatePageMeta(pageId, publishedVersion.title, publishedVersion.slug);
+
 			return {success: true};
 		} catch (e:Dynamic) {
 			return {success: false, error: 'Error publishing version: $e'};
