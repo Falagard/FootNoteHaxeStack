@@ -92,8 +92,9 @@ class PageNavigator {
 
     /**
      * Parse deep link from URL and navigate on app load.
+     * Returns true if handled, false if no deep link present.
      */
-    public function handleInitialDeepLink() {
+    public function handleInitialDeepLink():Bool {
         #if html5
         var hash = js.Browser.window.location.hash;
         if (hash != null && hash.length > 1) {
@@ -101,7 +102,9 @@ class PageNavigator {
             var pageId = parts[0];
             var anchor = parts.length > 1 ? parts[1] : null;
             navigate(pageId, anchor);
+            return true;
         }
         #end
+        return false;
     }
 }

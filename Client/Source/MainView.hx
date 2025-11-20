@@ -51,8 +51,10 @@ class MainView extends VBox {
 			renderActivePage();
 		});
 
-		// Immediately navigate to page 1
-		pageNavigator.navigate("3", null);
+		// Handle deep link from URL on app load, or navigate to default page 3
+		if (!pageNavigator.handleInitialDeepLink()) {
+			pageNavigator.navigate("3", null);
+		}
 	}
 	/** Render the active page using PageNavigator */
 	private function renderActivePage():Void {
@@ -83,7 +85,7 @@ class MainView extends VBox {
 
 		// Show/hide CMS button based on authentication
 		if (cmsBtn != null) {
-			cmsBtn.visible = appState.isAuthenticated;
+			cmsBtn.hidden = !appState.isAuthenticated;
 		}
 
 		// Change logout button to login button if not authenticated

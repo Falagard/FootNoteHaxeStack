@@ -23,6 +23,7 @@
     <hbox id="actions" percentWidth="100" styleName="topSpacing">
       <button id="loginBtn" text="Sign In" />
       <button id="registerBtn" text="Create Account" />
+      <button id="cancelBtn" text="Cancel" />
     </hbox>
     
     <!-- Optional: Add OAuth buttons section -->
