@@ -1,5 +1,5 @@
 <!-- Registration dialog XML layout -->
-<dialog id="registerDialog" width="400" styleName="registerDialog" closable="true" buttons="none">
+<dialog id="registerDialog" width="400" height="250" styleName="registerDialog" closable="true" buttons="none">
   <vbox id="contentBox" percentWidth="100">
     <label text="Create Account" styleName="dialogTitle" />
     

@@ -38,15 +38,46 @@ class LoginDialog extends Dialog {
         this.closable = false; // Force login - can't be dismissed
         this.buttons = null; // using internal buttons
         this.destroyOnClose = true;
-        
+
         if (loginBtn != null) loginBtn.onClick = function(_) doLogin();
         if (registerBtn != null) registerBtn.onClick = function(_) showRegister();
-        
+
         // Focus email field after layout
         haxe.ui.Toolkit.callLater(function() {
             if (emailField != null) emailField.focus = true;
         });
+
+        // Listen for Enter key while dialog is active
+        #if lime
+        var app = lime.app.Application.current;
+        if (app != null && app.window != null) {
+            app.window.onKeyDown.add(handleKeyDown);
+        }
+        #end
     }
+
+    // Remove event listener when dialog is closed
+    override public function hideDialog(button:DialogButton):Void {
+        #if lime
+        var app = lime.app.Application.current;
+        if (app != null && app.window != null) {
+            app.window.onKeyDown.remove(handleKeyDown);
+        }
+        #end
+        super.hideDialog(button);
+    }
+
+    // Handle key down event
+    #if lime
+    private function handleKeyDown(key:Int, modifier:Int):Void {
+        // Check for Enter key (RETURN or NUMPAD_ENTER)
+        if (key == lime.ui.KeyCode.RETURN || key == lime.ui.KeyCode.NUMPAD_ENTER) {
+            if (!loginBtn.disabled) {
+                doLogin();
+            }
+        }
+    }
+    #end
     
     function validate(emailOrUsername:String, password:String):Array<String> {
         var errs = [];
