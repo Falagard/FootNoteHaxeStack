@@ -35,6 +35,18 @@ class PageNavigator {
         this.cmsManager = cmsManager;
         this.renderer = renderer;
         instance = this;
+
+        #if html5
+        js.Browser.window.onhashchange = function(_) {
+            var hash = js.Browser.window.location.hash;
+            if (hash != null && hash.length > 1) {
+                var parts = hash.substr(1).split(':');
+                var pageId = parts[0];
+                var anchor = parts.length > 1 ? parts[1] : null;
+                navigate(pageId, anchor);
+            }
+        };
+        #end
     }
 
     /**
