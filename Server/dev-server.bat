@@ -20,11 +20,11 @@ echo Build successful! Starting server...
 echo Press Ctrl+C to stop server, then Enter to rebuild and restart.
 echo.
 
-start /B Export\hl\bin\SideWinderServer.exe
+start /B Export\hl\bin\HaxeStackStarterServer.exe
 
 pause > nul
 
 REM Kill the running server
-taskkill /F /IM SideWinderServer.exe > nul 2>&1
+taskkill /F /IM HaxeStackStarterServer.exe > nul 2>&1
 
 goto loop

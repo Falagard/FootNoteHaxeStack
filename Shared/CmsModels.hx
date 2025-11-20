@@ -17,7 +17,8 @@ typedef PageVersionDTO = {
 	layout:String,
 	createdAt:Date,
 	createdBy:String,
-	components:Array<PageComponentDTO>
+	components:Array<PageComponentDTO>,
+	seoHtml:String // cached SEO HTML
 };
 
 typedef PageDTO = {
@@ -31,6 +32,7 @@ typedef CreatePageRequest = {
 	slug:String,
 	title:String,
 	layout:String
+    ,?seoHtml:String
 };
 
 typedef CreatePageResponse = {
@@ -44,6 +46,7 @@ typedef UpdatePageRequest = {
 	title:String,
 	layout:String,
 	components:Array<PageComponentDTO>
+    ,?seoHtml:String
 };
 
 typedef UpdatePageResponse = {
@@ -51,6 +54,7 @@ typedef UpdatePageResponse = {
 	?versionId:Null<Int>,
 	?versionNum:Null<Int>,
 	?error:String
+    ,?seoHtml:String
 };
 
 typedef GetPageResponse = {

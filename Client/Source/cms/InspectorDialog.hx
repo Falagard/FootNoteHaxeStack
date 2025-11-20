@@ -1,5 +1,7 @@
 package cms;
 
+import cms.components.ButtonComponent;
+
 import state.PageNavigator;
 import haxe.ui.containers.dialogs.Dialog;
 import haxe.ui.components.Label;

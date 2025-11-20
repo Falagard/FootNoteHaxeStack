@@ -32,7 +32,7 @@ class CmsService implements ICmsService {
 			}
 
 			var layout = request.layout != null ? request.layout : "default";
-			var pageId = serializer.createPage(request.slug, request.title, layout);
+			var pageId = serializer.createPage(request.slug, request.title, layout, request.seoHtml);
 			return {success: true, pageId: pageId};
 		} catch (e:Dynamic) {
 			return {success: false, error: 'Error creating page: $e'};
@@ -57,7 +57,7 @@ class CmsService implements ICmsService {
 				};
 			}
 
-			var versionId = serializer.savePageVersion(pageDto, userId);
+			var versionId = serializer.savePageVersion(pageDto, userId, request.seoHtml);
 			
 			// Get the version number
 			var version = loader.loadVersion(versionId);
@@ -65,7 +65,8 @@ class CmsService implements ICmsService {
 			return {
 				success: true,
 				versionId: versionId,
-				versionNum: version.versionNum
+				versionNum: version.versionNum,
+				seoHtml: version.seoHtml
 			};
 		} catch (e:Dynamic) {
 			return {success: false, error: 'Error updating page: $e'};

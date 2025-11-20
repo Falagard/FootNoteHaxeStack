@@ -7,7 +7,7 @@ import haxe.Json;
 class PageSerializer {
 	public function new() {}
 
-	public function savePageVersion(page:PageDTO, ?userId:String):Int {
+	public function savePageVersion(page:PageDTO, ?userId:String, ?seoHtml:String):Int {
 		var conn = Database.acquire();
 		try {
 			// Get next version number
@@ -28,7 +28,8 @@ class PageSerializer {
 			params.set("title", page.title);
 			params.set("layout", page.layout);
 			params.set("createdBy", userId);
-			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, created_by) VALUES (@pageId, @versionNum, @title, @layout, @createdBy)";
+			params.set("seoHtml", seoHtml);
+			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, created_by, seo_html) VALUES (@pageId, @versionNum, @title, @layout, @createdBy, @seoHtml)";
 			conn.request(Database.buildSql(sql, params));
 			var versionId = conn.lastInsertId();
 
@@ -59,7 +60,7 @@ class PageSerializer {
 		}
 	}
 
-	public function createPage(slug:String, title:String, layout:String = "default"):Int {
+	public function createPage(slug:String, title:String, layout:String = "default", ?seoHtml:String):Int {
 		var conn = Database.acquire();
 		try {
 			var params = new Map<String, Dynamic>();
@@ -76,7 +77,7 @@ class PageSerializer {
 				layout: layout,
 				components: []
 			};
-			savePageVersion(page);
+			savePageVersion(page, null, seoHtml);
 
 			Database.release(conn);
 			return pageId;

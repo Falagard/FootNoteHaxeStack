@@ -7,6 +7,8 @@ import haxe.ui.components.Button;
 /** Button component for clickable actions */
 class ButtonComponent extends BaseComponent {
     
+    var btn:Button;
+
     public function new(?id:String) {
         super(id, "button");
         if (_props.text == null) _props.text = "Click Me";
@@ -18,7 +20,7 @@ class ButtonComponent extends BaseComponent {
         var box = new HBox();
         box.percentWidth = 100;
 
-        var btn = new Button();
+        btn = new Button();
         btn.text = Std.string(_props.text != null ? _props.text : "Button");
 
         btn.onClick = function(_) {
@@ -31,5 +33,13 @@ class ButtonComponent extends BaseComponent {
 
         box.addComponent(btn);
         return box;
+    }
+
+    /** Update the button label text */
+    public function setLabel(newLabel:String):Void {
+        _props.text = newLabel;
+        if (btn != null) {
+            btn.text = newLabel;
+        }
     }
 }

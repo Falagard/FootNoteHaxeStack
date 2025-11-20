@@ -1,5 +1,5 @@
 @echo off
-echo Building SideWinder Deploy Server...
+echo Building Server...
 echo.
 
 REM Build the project
