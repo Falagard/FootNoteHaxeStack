@@ -2,6 +2,7 @@ package cms;
 
 import services.AsyncServiceRegistry;
 import CmsModels;
+import util.SeoHtmlGenerator;
 import components.Notifications;
 
 /** Manager for all CMS operations - interfaces with backend services */
@@ -13,11 +14,13 @@ class CmsManager {
     // ============ Page Operations ============
     
     /** Create a new page */
-    public function createPage(slug:String, title:String, layout:String, callback:CreatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
+    public function createPage(slug:String, title:String, layout:String, ?components:Array<PageComponentDTO>, callback:CreatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
+        var seoHtml:String = components != null ? SeoHtmlGenerator.generate(components) : null;
         var request:CreatePageRequest = {
             slug: slug,
             title: title,
-            layout: layout
+            layout: layout,
+            seoHtml: seoHtml
         };
         
         untyped asyncServices.cms.createPageAsync(request, function(response:CreatePageResponse) {
@@ -35,11 +38,13 @@ class CmsManager {
     
     /** Update a page (creates new version) */
     public function updatePage(pageId:Int, title:String, layout:String, components:Array<PageComponentDTO>, callback:UpdatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
+        var seoHtml:String = SeoHtmlGenerator.generate(components);
         var request:UpdatePageRequest = {
             pageId: pageId,
             title: title,
             layout: layout,
-            components: components
+            components: components,
+            seoHtml: seoHtml
         };
         
         untyped asyncServices.cms.updatePageAsync(pageId, request, function(response:UpdatePageResponse) {

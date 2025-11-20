@@ -204,7 +204,7 @@ class PageList extends VBox {
             return;
         }
         
-        cmsManager.createPage(slug, title, "default", function(response:CreatePageResponse) {
+        cmsManager.createPage(slug, title, "default", [], function(response:CreatePageResponse) {
             if (response.success) {
                 hideCreateDialog();
                 loadPages();
