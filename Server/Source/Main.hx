@@ -3,6 +3,8 @@ package;
 import AuthModels;
 import CmsService;
 import ICmsService;
+import MegaMenuService;
+import IMegaMenuService;
 import sidewinder.AsyncBlockerPool;
 import sidewinder.UserService;
 import sidewinder.CacheService;
@@ -70,6 +72,7 @@ class Main extends Application {
 			c.addSingleton(ICacheService, CacheService);
 			c.addScoped(IAuthService, AuthService);
 			c.addScoped(ICmsService, CmsService);
+            c.addScoped(IMegaMenuService, MegaMenuService);
 		});
 
 		cache = DI.get(ICacheService);
@@ -313,6 +316,7 @@ class Main extends Application {
 		// Build AutoRouter mappings for all controllers
 		AutoRouter.build(router, IAuthService, () -> DI.get(IAuthService), cache);
 		AutoRouter.build(router, ICmsService, () -> DI.get(ICmsService), cache);
+        AutoRouter.build(router, IMegaMenuService, () -> DI.get(IMegaMenuService), cache);
 	}
 
 	// Entry point
