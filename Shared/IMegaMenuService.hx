@@ -5,8 +5,9 @@ import hx.injection.Service;
 
 interface IMegaMenuService extends Service {
     // Menus
-    @get("/api/menus")
+    @get("/pub/menus")
     function listMenus():Array<MenuDTO>;
+    
     @get("/api/menu/:id")
     function getMenu(id:Int):MenuDTO;
     @post("/api/menu")

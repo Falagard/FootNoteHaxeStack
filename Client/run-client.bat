@@ -1,4 +1,4 @@
 @echo off
-REM Run the SideWinder Deploy Client (HashLink build)
+REM Run the Client (HashLink build)
 cd /d "%~dp0"
-start "" "Export\hl\bin\SideWinderDeployClient.exe"
+start "" "Export\hl\bin\Client.exe"
