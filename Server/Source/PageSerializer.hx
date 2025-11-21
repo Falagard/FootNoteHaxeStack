@@ -1,4 +1,4 @@
-package shared;
+package;
 
 import CmsModels;
 import sidewinder.Database;

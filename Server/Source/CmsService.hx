@@ -2,11 +2,11 @@ package;
 
 import CmsModels;
 import ICmsService;
-import shared.PageLoader;
-import shared.PageSerializer;
-import shared.VersionRestorer;
-import shared.JsonValidator;
-import shared.ComponentSchema;
+import PageLoader;
+import PageSerializer;
+import VersionRestorer;
+import JsonValidator;
+import ComponentSchema;
 import haxe.Json;
 
 class CmsService implements ICmsService {

@@ -1,8 +1,8 @@
-package shared;
+package;
 
 import CmsModels;
-import shared.PageLoader;
-import shared.PageSerializer;
+import PageLoader;
+import PageSerializer;
 
 class VersionRestorer {
 	private var loader:PageLoader;

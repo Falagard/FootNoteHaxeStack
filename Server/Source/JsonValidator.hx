@@ -1,7 +1,7 @@
-package shared;
+package;
 
 import CmsModels;
-import shared.ComponentSchema;
+import ComponentSchema;
 import haxe.Json;
 
 class JsonValidator {
