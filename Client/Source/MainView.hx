@@ -1,6 +1,8 @@
 package;
 
 import haxe.ui.containers.VBox;
+import cms.megamenu.MegaMenuView;
+import cms.megamenu.MegaMenuAdminDialog;
 import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import state.AppState;
@@ -12,6 +14,8 @@ import cms.PageEditor;
 
 @:build(haxe.ui.ComponentBuilder.build("Assets/main-view.xml"))
 class MainView extends VBox {
+	var megaMenuView:MegaMenuView;
+	var megaMenuAdminDialog:MegaMenuAdminDialog;
 	var userLabel:Label; // from XML - displays current user
 	var logoutBtn:Button; // from XML - logout button
 	var cmsBtn:Button; // from XML - CMS button
@@ -59,6 +63,13 @@ class MainView extends VBox {
 		if (!pageNavigator.handleInitialDeepLink()) {
 			pageNavigator.navigate("3", null);
 		}
+
+		// --- MegaMenu Integration ---
+		// TODO: Replace null with actual IMegaMenuService instance
+		megaMenuView = new MegaMenuView();
+		this.addComponent(megaMenuView);
+		// To show admin dialog, call megaMenuAdminDialog.showDialog() as needed
+		// megaMenuAdminDialog = new MegaMenuAdminDialog(menuService);
 	}
 	/** Render the active page using PageNavigator */
 	private function renderActivePage():Void {
