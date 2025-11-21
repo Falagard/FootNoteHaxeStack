@@ -19,7 +19,6 @@ class AsyncServiceRegistry {
 
     public var auth:Dynamic; // authentication service
     public var cms:Dynamic; // CMS service
-    public var menu:Dynamic; 
 
     public function new(baseUrl:String) {
         this.baseUrl = baseUrl;
@@ -30,7 +29,6 @@ class AsyncServiceRegistry {
     private function createClients():Void {
         auth = AutoClientAsync.create(IAuthService, baseUrl, cookieJar);
         cms = AutoClientAsync.create(ICmsService, baseUrl, cookieJar);
-        menu = AutoClientAsync.create(IMenuService, baseUrl, cookieJar);
     }
 
     public function resetBaseUrl(newUrl:String):Void {
