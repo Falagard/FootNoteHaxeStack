@@ -61,3 +61,23 @@ interface ICmsService extends Service {
     @requiresAuth
 	function getComponentTypes():Array<String>;
 }
+
+typedef ICmsServiceAsync = {
+    // Page operations
+    function createPageAsync(request:CreatePageRequest, success:CreatePageResponse->Void, failure:Dynamic->Void):Void;
+    function updatePageAsync(pageId:Int, request:UpdatePageRequest, success:UpdatePageResponse->Void, failure:Dynamic->Void):Void;
+    function getPageAsync(pageId:Int, success:GetPageResponse->Void, failure:Dynamic->Void):Void;
+    function getPageBySlugAsync(slug:String, published:Bool, success:GetPageResponse->Void, failure:Dynamic->Void):Void;
+    function listPagesAsync(success:ListPagesResponse->Void, failure:Dynamic->Void):Void;
+
+    // Version operations
+    function publishVersionAsync(pageId:Int, versionId:Int, success:CreatePageResponse->Void, failure:Dynamic->Void):Void;
+    function restoreVersionAsync(versionId:Int, success:UpdatePageResponse->Void, failure:Dynamic->Void):Void;
+    function listVersionsAsync(pageId:Int, success:Dynamic->Void, failure:Dynamic->Void):Void;
+
+    // Asset operations
+    function uploadAssetAsync(request:UploadAssetRequest, success:UploadAssetResponse->Void, failure:Dynamic->Void):Void;
+
+    // Component types
+    function getComponentTypesAsync(success:Array<String>->Void, failure:Dynamic->Void):Void;
+}

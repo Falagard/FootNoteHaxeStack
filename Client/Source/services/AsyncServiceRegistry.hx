@@ -18,9 +18,9 @@ class AsyncServiceRegistry {
     public var baseUrl(default, null):String;
     public var cookieJar(default, null):ICookieJar;
 
-    public var auth:Dynamic; // authentication service
-    public var cms:Dynamic; // CMS service
-    public var megaMenu:Dynamic; // MegaMenu service
+    public var auth:IAuthServiceAsync; // authentication service
+    public var cms:ICmsServiceAsync; // CMS service
+    public var megaMenu:IMegaMenuServiceAsync; // MegaMenu service
 
     public function new(baseUrl:String) {
         this.baseUrl = baseUrl;

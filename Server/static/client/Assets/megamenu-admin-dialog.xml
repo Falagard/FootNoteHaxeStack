@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dialog width="900" height="600" title="Mega Menu Admin">
+    <hbox percentWidth="100" percentHeight="100">
+        <vbox id="menuList" width="30%" percentHeight="100" />
+        <vbox id="sectionList" width="35%" percentHeight="100" />
+        <vbox id="itemList" width="35%" percentHeight="100" />
+    </hbox>
+</dialog>

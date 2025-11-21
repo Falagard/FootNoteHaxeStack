@@ -38,3 +38,23 @@ interface IAuthService extends Service {
 	@post("/api/auth/refresh")
 	public function refreshSession():Null<Session>;
 }
+
+typedef IAuthServiceAsync = {
+    // Local authentication endpoints
+    function registerAsync(request:RegisterRequest, success:RegisterResponse->Void, failure:Dynamic->Void):Void;
+    function loginAsync(request:LoginRequest, success:LoginResponse->Void, failure:Dynamic->Void):Void;
+    function logoutAsync(success:Bool->Void, failure:Dynamic->Void):Void;
+    function getCurrentUserAsync(success:Null<UserPublic>->Void, failure:Dynamic->Void):Void;
+
+    // OAuth endpoints
+    function oauthLoginAsync(provider:String, request:OAuthLoginRequest, success:LoginResponse->Void, failure:Dynamic->Void):Void;
+    function linkOAuthProviderAsync(provider:String, request:OAuthLoginRequest, success:Bool->Void, failure:Dynamic->Void):Void;
+
+    // Password management
+    function changePasswordAsync(request:ChangePasswordRequest, success:Bool->Void, failure:Dynamic->Void):Void;
+    function requestPasswordResetAsync(email:String, success:Bool->Void, failure:Dynamic->Void):Void;
+    function verifyEmailAsync(code:String, success:Bool->Void, failure:Dynamic->Void):Void;
+
+    // Session management
+    function refreshSessionAsync(success:Null<Session>->Void, failure:Dynamic->Void):Void;
+}
