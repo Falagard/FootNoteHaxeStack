@@ -1,5 +1,6 @@
 package;
 
+import VisibilityConfig;
 import MegaMenuModels;
 import IMegaMenuService;
 import sidewinder.Database;
@@ -11,7 +12,7 @@ class MegaMenuService implements IMegaMenuService {
     // Menus
     public function listMenus():Array<MenuDTO> {
         var conn = Database.acquire();
-        var sql = "SELECT * FROM menus WHERE enabled = 1 ORDER BY sort_order ASC";
+        var sql = "SELECT *, visibilityConfig FROM menus WHERE enabled = 1 ORDER BY sort_order ASC";
         var rs = conn.request(Database.buildSql(sql, new Map()));
         var menus = [];
         while (rs.hasNext()) {
@@ -26,7 +27,7 @@ class MegaMenuService implements IMegaMenuService {
         var conn = Database.acquire();
         var params = new Map<String, Dynamic>();
         params.set("id", id);
-        var sql = "SELECT * FROM menus WHERE id = @id";
+        var sql = "SELECT *, visibilityConfig FROM menus WHERE id = @id";
         var rs = conn.request(Database.buildSql(sql, params));
         if (!rs.hasNext()) {
             Database.release(conn);
@@ -45,7 +46,8 @@ class MegaMenuService implements IMegaMenuService {
         params.set("icon", menu.icon);
         params.set("sort_order", menu.sortOrder);
         params.set("enabled", menu.enabled);
-        var sql = "INSERT INTO menus (name, slug, icon, sort_order, enabled) VALUES (@name, @slug, @icon, @sort_order, @enabled)";
+        params.set("visibilityConfig", haxe.Json.stringify(menu.visibilityConfig));
+        var sql = "INSERT INTO menus (name, slug, icon, sort_order, enabled, visibilityConfig) VALUES (@name, @slug, @icon, @sort_order, @enabled, @visibilityConfig)";
         conn.request(Database.buildSql(sql, params));
         var id = conn.lastInsertId();
         Database.release(conn);
@@ -61,7 +63,8 @@ class MegaMenuService implements IMegaMenuService {
         params.set("icon", menu.icon);
         params.set("sort_order", menu.sortOrder);
         params.set("enabled", menu.enabled);
-        var sql = "UPDATE menus SET name = @name, slug = @slug, icon = @icon, sort_order = @sort_order, enabled = @enabled WHERE id = @id";
+        params.set("visibilityConfig", haxe.Json.stringify(menu.visibilityConfig));
+        var sql = "UPDATE menus SET name = @name, slug = @slug, icon = @icon, sort_order = @sort_order, enabled = @enabled, visibilityConfig = @visibilityConfig WHERE id = @id";
         conn.request(Database.buildSql(sql, params));
         Database.release(conn);
         return true;
@@ -137,7 +140,7 @@ class MegaMenuService implements IMegaMenuService {
         var conn = Database.acquire();
         var params = new Map<String, Dynamic>();
         params.set("section_id", sectionId);
-        var sql = "SELECT * FROM menu_items WHERE section_id = @section_id AND enabled = 1 ORDER BY sort_order ASC";
+        var sql = "SELECT *, visibilityConfig FROM menu_items WHERE section_id = @section_id AND enabled = 1 ORDER BY sort_order ASC";
         var rs = conn.request(Database.buildSql(sql, params));
         var items = [];
         while (rs.hasNext()) {
@@ -160,7 +163,8 @@ class MegaMenuService implements IMegaMenuService {
         params.set("custom_component", item.customComponent);
         params.set("sort_order", item.sortOrder);
         params.set("enabled", item.enabled);
-        var sql = "INSERT INTO menu_items (section_id, label, description, url, icon, item_type, custom_component, sort_order, enabled) VALUES (@section_id, @label, @description, @url, @icon, @item_type, @custom_component, @sort_order, @enabled)";
+        params.set("visibilityConfig", haxe.Json.stringify(item.visibilityConfig));
+        var sql = "INSERT INTO menu_items (section_id, label, description, url, icon, item_type, custom_component, sort_order, enabled, visibilityConfig) VALUES (@section_id, @label, @description, @url, @icon, @item_type, @custom_component, @sort_order, @enabled, @visibilityConfig)";
         conn.request(Database.buildSql(sql, params));
         var id = conn.lastInsertId();
         Database.release(conn);
@@ -179,7 +183,8 @@ class MegaMenuService implements IMegaMenuService {
         params.set("custom_component", item.customComponent);
         params.set("sort_order", item.sortOrder);
         params.set("enabled", item.enabled);
-        var sql = "UPDATE menu_items SET label = @label, description = @description, url = @url, icon = @icon, item_type = @item_type, custom_component = @custom_component, sort_order = @sort_order, enabled = @enabled WHERE id = @id";
+        params.set("visibilityConfig", haxe.Json.stringify(item.visibilityConfig));
+        var sql = "UPDATE menu_items SET label = @label, description = @description, url = @url, icon = @icon, item_type = @item_type, custom_component = @custom_component, sort_order = @sort_order, enabled = @enabled, visibilityConfig = @visibilityConfig WHERE id = @id";
         conn.request(Database.buildSql(sql, params));
         Database.release(conn);
         return true;
@@ -253,15 +258,16 @@ class MegaMenuService implements IMegaMenuService {
 
     // Helper builders
     private function buildMenuDTO(menu:Dynamic):MenuDTO {
-        return {
-            id: Std.int(menu.id),
-            name: Std.string(menu.name),
-            slug: Std.string(menu.slug),
-            icon: menu.icon,
-            sortOrder: Std.int(menu.sort_order),
-            enabled: menu.enabled == 1,
-            sections: listSections(menu.id)
-        };
+            return {
+                id: Std.int(menu.id),
+                name: Std.string(menu.name),
+                slug: Std.string(menu.slug),
+                icon: menu.icon,
+                sortOrder: Std.int(menu.sort_order),
+                enabled: menu.enabled == 1,
+                sections: listSections(menu.id),
+                visibilityConfig: menu.visibilityConfig != null ? haxe.Json.parse(menu.visibilityConfig) : { visibilityMode: "Public", groupIds: [] }
+            };
     }
 
     private function buildSectionDTO(section:Dynamic):MenuSectionDTO {
@@ -277,18 +283,19 @@ class MegaMenuService implements IMegaMenuService {
     }
 
     private function buildItemDTO(item:Dynamic):MenuItemDTO {
-        return {
-            id: Std.int(item.id),
-            sectionId: Std.int(item.section_id),
-            label: item.label,
-            description: item.description,
-            url: item.url,
-            icon: item.icon,
-            itemType: item.item_type,
-            customComponent: item.custom_component,
-            sortOrder: Std.int(item.sort_order),
-            enabled: item.enabled == 1,
-            metadata: listMetadata(item.id)
-        };
+            return {
+                id: Std.int(item.id),
+                sectionId: Std.int(item.section_id),
+                label: item.label,
+                description: item.description,
+                url: item.url,
+                icon: item.icon,
+                itemType: item.item_type,
+                customComponent: item.custom_component,
+                sortOrder: Std.int(item.sort_order),
+                enabled: item.enabled == 1,
+                metadata: listMetadata(item.id),
+                visibilityConfig: item.visibilityConfig != null ? haxe.Json.parse(item.visibilityConfig) : { visibilityMode: "Public", groupIds: [] }
+            };
     }
 }

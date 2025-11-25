@@ -68,8 +68,9 @@ class CmsService implements ICmsService {
 				pageId: id,
 				title: request.title,
 				layout: request.layout,
-                slug: request.slug,
-				components: request.components
+				slug: request.slug,
+				components: request.components,
+				visibilityConfig: request.visibilityConfig != null ? request.visibilityConfig : { visibilityMode: "Public", groupIds: [] }
 			};
 
 			var validationResult = validator.validatePageDTO(pageDto);
@@ -129,12 +130,14 @@ class CmsService implements ICmsService {
 	public function publishVersion(pageId:Int, versionId:Int, userId:String):CreatePageResponse {
 		try {
 			// Publish the version
-			serializer.publishVersion(pageId, versionId);
-
 			// Get published version details
 			var publishedVersion = loader.loadVersion(versionId);
 
-		    serializer.updatePageMeta(pageId, publishedVersion.title, publishedVersion.slug);
+			// Update page meta and visibilityConfig
+			serializer.updatePageMeta(pageId, publishedVersion.title, publishedVersion.slug, publishedVersion.visibilityConfig);
+
+			// Publish the version
+			serializer.publishVersion(pageId, versionId);
 
 			return {success: true};
 		} catch (e:Dynamic) {

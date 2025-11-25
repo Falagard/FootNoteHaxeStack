@@ -1,4 +1,7 @@
+
 package;
+
+import VisibilityConfig;
 
 import Date;
 
@@ -7,6 +10,7 @@ typedef PageComponentDTO = {
 	type:String,
 	sort:Int,
 	data:Dynamic
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef PageVersionDTO = {
@@ -20,6 +24,7 @@ typedef PageVersionDTO = {
 	createdBy:String,
 	components:Array<PageComponentDTO>,
 	seoHtml:String // cached SEO HTML
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef PageDTO = {
@@ -28,6 +33,7 @@ typedef PageDTO = {
 	layout:String,
 	slug:String,
 	components:Array<PageComponentDTO>
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef CreatePageRequest = {
@@ -50,6 +56,7 @@ typedef UpdatePageRequest = {
 	components:Array<PageComponentDTO>,
 	slug:String,
 	?seoHtml:String
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef UpdatePageResponse = {

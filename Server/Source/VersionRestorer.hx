@@ -27,15 +27,17 @@ class VersionRestorer {
 			pageId: v.pageId,
 			title: v.title,
 			layout: v.layout,
-            slug: v.slug,
-			components: []
+			slug: v.slug,
+			components: [],
+			visibilityConfig: v.visibilityConfig != null ? v.visibilityConfig : { visibilityMode: "Public", groupIds: [] }
 		};
 		for (c in v.components) {
 			p.components.push({
 				id: 0,
 				type: c.type,
 				sort: c.sort,
-				data: c.data
+				data: c.data,
+				visibilityConfig: c.visibilityConfig != null ? c.visibilityConfig : { visibilityMode: "Public", groupIds: [] }
 			});
 		}
 

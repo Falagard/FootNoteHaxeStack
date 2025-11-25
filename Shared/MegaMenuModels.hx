@@ -1,4 +1,7 @@
+
 package;
+
+import VisibilityConfig;
 
 import Date;
 
@@ -10,6 +13,7 @@ typedef MenuDTO = {
     sortOrder:Int,
     enabled:Bool,
     sections:Array<MenuSectionDTO>
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef MenuSectionDTO = {
@@ -34,6 +38,7 @@ typedef MenuItemDTO = {
     sortOrder:Int,
     enabled:Bool,
     metadata:Array<MenuItemMetadataDTO>
+    ,visibilityConfig:VisibilityConfig
 };
 
 typedef MenuItemMetadataDTO = {

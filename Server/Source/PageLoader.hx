@@ -97,7 +97,7 @@ class PageLoader {
 		try {
 			var params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
-			var sql = "SELECT id, page_id, version_num, title, layout, slug, created_at, created_by, seo_html FROM page_versions WHERE id = @versionId";
+			var sql = "SELECT id, page_id, version_num, title, layout, slug, created_at, created_by, seo_html, visibilityConfig FROM page_versions WHERE id = @versionId";
 			var rs = conn.request(Database.buildSql(sql, params));
 			if (!rs.hasNext()) {
 				Database.release(conn);
@@ -114,12 +114,13 @@ class PageLoader {
 				createdAt: Date.fromString(Std.string(Reflect.field(v, "created_at"))),
 				createdBy: Std.string(Reflect.field(v, "created_by")),
 				components: [],
-				seoHtml: Std.string(Reflect.field(v, "seo_html"))
+				seoHtml: Std.string(Reflect.field(v, "seo_html")),
+				visibilityConfig: v.visibilityConfig != null ? haxe.Json.parse(Std.string(Reflect.field(v, "visibilityConfig"))) : { visibilityMode: "Public", groupIds: [] }
 			};
 
 			params = new Map<String, Dynamic>();
 			params.set("versionId", versionId);
-			sql = "SELECT id, sort_order, type, data_json FROM page_components WHERE page_version_id = @versionId ORDER BY sort_order ASC";
+			sql = "SELECT id, sort_order, type, data_json, visibilityConfig FROM page_components WHERE page_version_id = @versionId ORDER BY sort_order ASC";
 			var rs2 = conn.request(Database.buildSql(sql, params));
 			while (rs2.hasNext()) {
 				var c = rs2.next();
@@ -127,7 +128,8 @@ class PageLoader {
 					id: Std.int(Reflect.field(c, "id")),
 					sort: Std.int(Reflect.field(c, "sort_order")),
 					type: Std.string(Reflect.field(c, "type")),
-					data: Json.parse(Std.string(Reflect.field(c, "data_json")))
+					data: Json.parse(Std.string(Reflect.field(c, "data_json"))),
+					visibilityConfig: c.visibilityConfig != null ? haxe.Json.parse(Std.string(Reflect.field(c, "visibilityConfig"))) : { visibilityMode: "Public", groupIds: [] }
 				});
 			}
 

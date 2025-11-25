@@ -7,7 +7,7 @@ import haxe.Json;
 class PageSerializer {
 	public function new() {}
 
-	public function updatePageMeta(pageId:Int, title:String, slug:String):Bool {
+	public function updatePageMeta(pageId:Int, title:String, slug:String, ?visibilityConfig:VisibilityConfig):Bool {
 		// Validate slug format (only allow a-z, 0-9, dash, underscore, min 3 chars)
 		var slugRegex = ~/^[a-z0-9_-]{3,}$/i;
 		if (!slugRegex.match(slug)) {
@@ -25,12 +25,17 @@ class PageSerializer {
 				Database.release(conn);
 				return false; // Duplicate found
 			}
-			// Update title and slug
+			// Update title, slug, and visibilityConfig if provided
 			params = new Map<String, Dynamic>();
 			params.set("pageId", pageId);
 			params.set("title", title);
 			params.set("slug", slug);
-			sql = "UPDATE pages SET title = @title, slug = @slug WHERE id = @pageId";
+			if (visibilityConfig != null) {
+				params.set("visibilityConfig", haxe.Json.stringify(visibilityConfig));
+				sql = "UPDATE pages SET title = @title, slug = @slug, visibilityConfig = @visibilityConfig WHERE id = @pageId";
+			} else {
+				sql = "UPDATE pages SET title = @title, slug = @slug WHERE id = @pageId";
+			}
 			conn.request(Database.buildSql(sql, params));
 			Database.release(conn);
 			return true;
@@ -63,7 +68,8 @@ class PageSerializer {
 			params.set("slug", page.slug);
 			params.set("createdBy", userId);
 			params.set("seoHtml", seoHtml);
-			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, slug, created_by, seo_html) VALUES (@pageId, @versionNum, @title, @layout, @slug, @createdBy, @seoHtml)";
+			params.set("visibilityConfig", haxe.Json.stringify(page.visibilityConfig != null ? page.visibilityConfig : { visibilityMode: "Public", groupIds: [] }));
+			sql = "INSERT INTO page_versions (page_id, version_num, title, layout, slug, created_by, seo_html, visibilityConfig) VALUES (@pageId, @versionNum, @title, @layout, @slug, @createdBy, @seoHtml, @visibilityConfig)";
 			conn.request(Database.buildSql(sql, params));
 			var versionId = conn.lastInsertId();
 
@@ -75,7 +81,8 @@ class PageSerializer {
 				params.set("sortOrder", comp.sort);
 				params.set("type", comp.type);
 				params.set("dataJson", jsonData);
-				sql = "INSERT INTO page_components (page_version_id, sort_order, type, data_json) VALUES (@versionId, @sortOrder, @type, @dataJson)";
+				params.set("visibilityConfig", haxe.Json.stringify(comp.visibilityConfig));
+				sql = "INSERT INTO page_components (page_version_id, sort_order, type, data_json, visibilityConfig) VALUES (@versionId, @sortOrder, @type, @dataJson, @visibilityConfig)";
 				conn.request(Database.buildSql(sql, params));
 			}
 
@@ -112,7 +119,8 @@ class PageSerializer {
 				title: title,
 				layout: layout,
 				slug: slug,
-				components: []
+				components: [],
+				visibilityConfig: { visibilityMode: "Public", groupIds: [] }
 			};
 			savePageVersion(page, null, seoHtml);
 
