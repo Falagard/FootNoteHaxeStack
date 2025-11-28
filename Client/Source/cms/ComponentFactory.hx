@@ -12,7 +12,7 @@ class ComponentFactory {
             case "text": new TextComponent(id);
             case "image": new ImageComponent(id);
             case "button": new ButtonComponent(id);
-            case "pagelist": cast new PageListComponent(null); // Pass null for ICmsManager, parent should set
+            case "pagelist": new PageListComponent(id);
             default:
                 // Default to text component for unknown types
                 trace('Unknown component type: $type, using TextComponent');

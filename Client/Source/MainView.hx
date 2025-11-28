@@ -172,7 +172,7 @@ class MainView extends VBox {
 		contentPlaceholder.addComponent(backBtn);
 
 		// Create and show embeddable page list
-		currentPageList = cast new PageListComponent(cmsManager);
+		currentPageList = cast new PageListComponent();
 		// Parent controls sizing; set percentWidth/percentHeight if desired:
 		// currentPageList.percentWidth = 100;
 		// currentPageList.percentHeight = 100;
@@ -187,7 +187,7 @@ class MainView extends VBox {
 			Notifications.show('View page ' + pageId, 'info');
 		};
 
-		contentPlaceholder.addComponent(currentPageList);
+		contentPlaceholder.addComponent(currentPageList.render());
 	}
 	
     /** Show the page editor */
