@@ -1,10 +1,14 @@
 package ;
 
+import cms.CmsManager;
+import cms.ICmsManager;
 import haxe.ui.HaxeUIApp;
 import haxe.ui.Toolkit;
 import haxe.ui.styles.StyleSheet;
 import haxe.ui.styles.CompositeStyleSheet;
 import components.Notifications;
+import sidewinder.DI;
+using hx.injection.ServiceExtensions;
 import haxe.ui.containers.dialogs.Dialog; // (no direct use yet, kept for future global styling)
 import views.auth.AuthManager;
 
@@ -12,6 +16,11 @@ class Main {
     public static function main() {
         var app = new HaxeUIApp();
         app.ready(function() {
+
+            DI.init(c -> {
+                c.addSingleton(ICmsManager, CmsManager);
+		    });
+
             // Inject custom styles for errorBanner
             var css = "" +
                 ".errorBanner { background-color:#ffe5e5; border:1px solid #d35454; padding:6px 10px; border-radius:4px; color:#7d1f1f; font-size:13px; }" +
@@ -47,7 +56,6 @@ class Main {
             var mainView = new MainView();
             app.addComponent(mainView);
             Notifications.init(mainView);
-            // ModalManager removed; dialogs use Screen overlay by default
             
             app.start();
         });

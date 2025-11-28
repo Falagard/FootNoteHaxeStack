@@ -1,6 +1,7 @@
 package cms;
 
 import haxe.ui.containers.dialogs.Dialog;
+import sidewinder.DI;
 import cms.InspectorDialog;
 import haxe.ui.containers.VBox;
 import haxe.ui.containers.HBox;
@@ -10,7 +11,7 @@ import haxe.ui.components.TextField;
 import haxe.ui.components.DropDown;
 import haxe.ui.components.Switch;
 import haxe.ui.data.ArrayDataSource;
-import cms.CmsManager;
+import cms.ICmsManager;
 import cms.ComponentFactory;
 import cms.components.IPageComponent;
 import cms.EditorComponent;
@@ -89,15 +90,15 @@ class PageEditor extends Dialog {
 	var editPageInfoBtn:Button; // new button for editing page info
 
 	// Data
-	var cmsManager:CmsManager;
+		var cmsManager:ICmsManager;
 	var currentPage:PageVersionDTO;
 	var pageSlug:String = ""; // store slug locally
 	var editorComponents:Array<EditorComponent> = [];
 	var selectedComponent:EditorComponent;
 
-	public function new(cmsManager:CmsManager) {
+	public function new() {
 		super();
-		this.cmsManager = cmsManager;
+		this.cmsManager = DI.get(ICmsManager);
 		this.title = "Page Editor";
 		this.destroyOnClose = true;
 	}

@@ -1,6 +1,6 @@
 package state;
 
-import cms.CmsManager;
+import cms.ICmsManager;
 import CmsModels;
 import cms.PageRenderer;
 import state.AppState;
@@ -27,10 +27,10 @@ class PageNavigator {
     public var onBeforeNavigate:Array<Void->Bool> = [];
     public var onNavigate:Array<Void->Void> = [];
     public var appState:AppState;
-    public var cmsManager:CmsManager;
+    public var cmsManager:ICmsManager;
     public var renderer:PageRenderer;
 
-    public function new(appState:AppState, cmsManager:CmsManager, renderer:PageRenderer) {
+    public function new(appState:AppState, cmsManager:ICmsManager, renderer:PageRenderer) {
         this.appState = appState;
         this.cmsManager = cmsManager;
         this.renderer = renderer;

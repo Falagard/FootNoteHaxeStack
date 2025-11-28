@@ -6,7 +6,7 @@ import util.SeoHtmlGenerator;
 import components.Notifications;
 
 /** Manager for all CMS operations - interfaces with backend services */
-class CmsManager {
+class CmsManager implements ICmsManager {
     var asyncServices = AsyncServiceRegistry.instance;
     
     public function new() {}

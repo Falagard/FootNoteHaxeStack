@@ -7,9 +7,10 @@ import haxe.ui.components.Button;
 import haxe.ui.components.Label;
 import state.AppState;
 import components.Notifications;
-import cms.CmsManager;
+import cms.ICmsManager;
+import sidewinder.DI;
 import CmsModels;
-import cms.PageList;
+import cms.components.PageListComponent;
 import cms.PageEditor;
 
 @:build(haxe.ui.ComponentBuilder.build("Assets/main-view.xml"))
@@ -24,8 +25,8 @@ class MainView extends VBox {
 	var appState = AppState.instance;
 	var asyncServices = AppState.instance.asyncServices;
 
-	var cmsManager:CmsManager;
-	var currentPageList:PageList;
+	var cmsManager:ICmsManager;
+	var currentPageList:PageListComponent;
 	var currentEditor:PageEditor;
 
 	var authManager:views.auth.AuthManager;
@@ -38,7 +39,7 @@ class MainView extends VBox {
 		super();
 
 		// Initialize CMS manager
-		cmsManager = new CmsManager();
+		cmsManager = DI.get(ICmsManager);
 		pageRenderer = new cms.PageRenderer();
 
 		// Initialize PageNavigator
@@ -170,12 +171,20 @@ class MainView extends VBox {
 		};
 		contentPlaceholder.addComponent(backBtn);
 
-		// Create and show page list
-		currentPageList = new PageList(cmsManager);
+		// Create and show embeddable page list
+		currentPageList = cast new PageListComponent(cmsManager);
+		// Parent controls sizing; set percentWidth/percentHeight if desired:
+		// currentPageList.percentWidth = 100;
+		// currentPageList.percentHeight = 100;
 
 		// Handle edit page request
 		currentPageList.onEditPage = function(pageId:Int) {
 			showPageEditor(pageId);
+		};
+		// Optionally handle view page event
+		currentPageList.onViewPage = function(pageId:Int) {
+			// Example: show a preview dialog or navigate
+			Notifications.show('View page ' + pageId, 'info');
 		};
 
 		contentPlaceholder.addComponent(currentPageList);
@@ -183,7 +192,7 @@ class MainView extends VBox {
 	
     /** Show the page editor */
     private function showPageEditor(pageId:Int):Void {
-        currentEditor = new PageEditor(cmsManager);
+		currentEditor = new PageEditor();
         currentEditor.showDialog();
         currentEditor.loadPage(pageId);		// Handle save callback to refresh list
 		currentEditor.onSaved = function(_) {

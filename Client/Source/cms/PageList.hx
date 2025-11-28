@@ -10,14 +10,23 @@ import haxe.ui.components.Label;
 import haxe.ui.components.TextField;
 import haxe.ui.components.Spacer;
 import haxe.ui.data.ArrayDataSource;
-import cms.CmsManager;
+import cms.ICmsManager;
 import cms.PageEditor;
 import CmsModels;
 using StringTools;
 
 /** View for listing and managing all pages */
 class PageList extends VBox {
-    public var onEditPage:Int->Void; // callback when user wants to edit a page
+    /**
+     * Callback when user wants to edit a page. Set by parent.
+     * Example: pageList.onEditPage = function(pageId) { ... }
+     */
+    public var onEditPage:Int->Void = null;
+    /**
+     * Callback when user wants to view a page. Optional.
+     * Example: pageList.onViewPage = function(pageId) { ... }
+     */
+    public var onViewPage:Int->Void = null;
     
     // UI components
     var createPageBtn:Button;
@@ -29,16 +38,20 @@ class PageList extends VBox {
     var cancelCreateBtn:Button;
     var confirmCreateBtn:Button;
     
-    var cmsManager:CmsManager;
+    var cmsManager:ICmsManager;
     var pages:Array<PageListItem> = [];
     var tableDataSource:ArrayDataSource<Dynamic>;
     
-    public function new(cmsManager:CmsManager) {
+    /**
+     * Create a new PageList.
+     * @param cmsManager The ICmsManager instance to use. Can also be set later via property.
+     *
+     * Sizing is not set by default; parent should control width/height as needed.
+     */
+    public function new(cmsManager:ICmsManager) {
         super();
         this.cmsManager = cmsManager;
-        this.percentWidth = 100;
-        this.percentHeight = 100;
-        
+        // Sizing is now flexible; parent should set percentWidth/percentHeight or explicit size if desired.
         buildUI();
         loadPages();
     }
@@ -46,52 +59,43 @@ class PageList extends VBox {
     function buildUI():Void {
         // Top bar
         var topBar = new HBox();
-        topBar.percentWidth = 100;
-        
+        // Parent can set sizing; do not force percentWidth
         var titleLabel = new Label();
         titleLabel.text = "CMS Pages";
         topBar.addComponent(titleLabel);
-        
         var spacer = new Spacer();
         spacer.percentWidth = 100;
         topBar.addComponent(spacer);
-        
         createPageBtn = new Button();
         createPageBtn.text = "Create New Page";
         createPageBtn.onClick = function(_) showCreateDialog();
         topBar.addComponent(createPageBtn);
-        
         refreshBtn = new Button();
         refreshBtn.text = "Refresh";
         refreshBtn.onClick = function(_) loadPages();
         topBar.addComponent(refreshBtn);
-        
         addComponent(topBar);
-        
-        // Create table view
+
+        // Table view: parent can set sizing; do not force percentWidth/percentHeight
         pageTable = new TableView();
-        pageTable.percentWidth = 100;
-        pageTable.percentHeight = 100;
-        pageTable.percentContentWidth = 100;
-        
-        // Add columns
+        // pageTable.percentWidth = 100;
+        // pageTable.percentHeight = 100;
+        // pageTable.percentContentWidth = 100;
+        // Columns
         pageTable.addColumn("ID").width = 80;
         pageTable.addColumn("Slug").width = 100;
         pageTable.addColumn("Title").width = 200;
         pageTable.addColumn("Created").width = 200;
-        
-        // Initialize data source
+        // Data source
         tableDataSource = new ArrayDataSource<Dynamic>();
         pageTable.dataSource = tableDataSource;
-        
-        // Handle row click for editing
+        // Row click: call editPage (parent can override via onEditPage)
         pageTable.onClick = function(event) {
             var selectedItem = pageTable.selectedItem;
             if (selectedItem != null && selectedItem.pageId != null) {
                 editPage(selectedItem.pageId);
             }
         };
-        
         addComponent(pageTable);
     }
     
@@ -223,23 +227,53 @@ class PageList extends VBox {
             onEditPage(pageId);
         }
     }
+    /**
+     * Call this to trigger the view page event. Parent can set onViewPage to handle.
+     */
+    function triggerViewPage(pageId:Int):Void {
+        if (onViewPage != null) {
+            onViewPage(pageId);
+        } else {
+            viewPage(pageId);
+        }
+    }
     
     /** View a published page */
     function viewPage(pageId:Int):Void {
         cmsManager.getPage(pageId, function(response:GetPageResponse) {
             if (response.success && response.page != null) {
-                // Show in a preview dialog
+                // Show in a preview dialog (default behavior)
                 var previewDialog = new Dialog();
                 previewDialog.title = "Preview: " + response.page.title;
                 previewDialog.percentWidth = 80;
                 previewDialog.percentHeight = 80;
-                
                 var renderer = new PageRenderer();
                 var rendered = renderer.render(response.page);
                 previewDialog.addComponent(rendered);
-                
                 previewDialog.showDialog();
             }
         });
+        /**
+         * Documentation:
+         *
+         * Embeddable PageList component for listing and managing CMS pages.
+         *
+         * Usage:
+         *   var pageList = new PageList(cmsManager);
+         *   pageList.onEditPage = function(pageId) { ... };
+         *   pageList.onViewPage = function(pageId) { ... };
+         *   // Add to parent container as needed
+         *
+         * Sizing:
+         *   By default, PageList does not set percentWidth/percentHeight. Parent should control sizing.
+         *
+         * Dependencies:
+         *   Requires ICmsManager (pass to constructor or set property).
+         *
+         * Events:
+         *   onEditPage(pageId:Int): Called when user wants to edit a page.
+         *   onViewPage(pageId:Int): Called when user wants to view a page (optional).
+         */
     }
 }
+

@@ -1,6 +1,7 @@
 package cms;
 
 import cms.components.*;
+import cms.components.PageListComponent;
 import CmsModels;
 
 /** Factory for creating page components by type */
@@ -11,6 +12,7 @@ class ComponentFactory {
             case "text": new TextComponent(id);
             case "image": new ImageComponent(id);
             case "button": new ButtonComponent(id);
+            case "pagelist": cast new PageListComponent(null); // Pass null for ICmsManager, parent should set
             default:
                 // Default to text component for unknown types
                 trace('Unknown component type: $type, using TextComponent');
@@ -27,6 +29,6 @@ class ComponentFactory {
     
     /** Get list of available component types */
     public static function getAvailableTypes():Array<String> {
-        return ["text", "image", "button"];
+        return ["text", "image", "button", "pagelist"];
     }
 }
