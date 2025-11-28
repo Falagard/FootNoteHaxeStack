@@ -38,7 +38,7 @@ class CmsManager {
     }
     
     /** Update a page (creates new version) */
-    public function updatePage(pageId:Int, title:String, layout:String, components:Array<PageComponentDTO>, slug:String, callback:UpdatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
+    public function updatePage(pageId:Int, title:String, layout:String, components:Array<PageComponentDTO>, slug:String, visibilityConfig:VisibilityConfig, callback:UpdatePageResponse->Void, ?errorCallback:Dynamic->Void):Void {
         var seoHtml:String = SeoHtmlGenerator.generate(components);
         var request:UpdatePageRequest = {
             pageId: pageId,
@@ -46,7 +46,8 @@ class CmsManager {
             layout: layout,
             components: components,
             slug: slug,
-            seoHtml: seoHtml
+            seoHtml: seoHtml,
+            visibilityConfig: visibilityConfig
         };
         
         untyped asyncServices.cms.updatePageAsync(pageId, request, function(response:UpdatePageResponse) {

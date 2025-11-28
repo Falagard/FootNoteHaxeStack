@@ -12,7 +12,7 @@ class MegaMenuService implements IMegaMenuService {
     // Menus
     public function listMenus():Array<MenuDTO> {
         var conn = Database.acquire();
-        var sql = "SELECT *, visibilityConfig FROM menus WHERE enabled = 1 ORDER BY sort_order ASC";
+        var sql = "SELECT * FROM menus WHERE enabled = 1 ORDER BY sort_order ASC";
         var rs = conn.request(Database.buildSql(sql, new Map()));
         var menus = [];
         while (rs.hasNext()) {
@@ -27,7 +27,7 @@ class MegaMenuService implements IMegaMenuService {
         var conn = Database.acquire();
         var params = new Map<String, Dynamic>();
         params.set("id", id);
-        var sql = "SELECT *, visibilityConfig FROM menus WHERE id = @id";
+        var sql = "SELECT * FROM menus WHERE id = @id";
         var rs = conn.request(Database.buildSql(sql, params));
         if (!rs.hasNext()) {
             Database.release(conn);

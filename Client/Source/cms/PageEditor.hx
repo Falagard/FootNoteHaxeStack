@@ -15,6 +15,7 @@ import cms.ComponentFactory;
 import cms.components.IPageComponent;
 import cms.EditorComponent;
 import CmsModels;
+import VisibilityConfig;
 
 /** Page editor dialog for editing pages with live preview */
 @:build(haxe.ui.ComponentBuilder.build("Assets/page-editor.xml"))
@@ -54,7 +55,8 @@ class PageEditor extends Dialog {
 			id: 0, // will be assigned by server
 			type: comp.type,
 			sort: editorComponents.length,
-			data: comp.props
+			data: comp.props,
+			visibilityConfig: { visibilityMode: "public", groupIds: [] }
 		};
 		var editorComp = new EditorComponent(dto, this);
 		editorComponents.push(editorComp);
@@ -213,7 +215,7 @@ class PageEditor extends Dialog {
 			components.push(ec.dto);
 		}
 
-		cmsManager.updatePage(currentPage.pageId, currentPage.title, currentPage.layout, components, pageSlug, function(response:UpdatePageResponse) {
+		cmsManager.updatePage(currentPage.pageId, currentPage.title, currentPage.layout, components, pageSlug, currentPage.visibilityConfig, function(response:UpdatePageResponse) {
 			if (response.success) {
 				// Reload to get updated version info
 				loadPage(currentPage.pageId);
