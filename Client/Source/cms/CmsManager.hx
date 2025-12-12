@@ -2,6 +2,7 @@ package cms;
 
 import services.AsyncServiceRegistry;
 import CmsModels;
+import MegaMenuModels; // for MenuDTO
 import util.SeoHtmlGenerator;
 import components.Notifications;
 
@@ -174,6 +175,28 @@ class CmsManager implements ICmsManager {
             callback(types);
         }, function(err:Dynamic) {
             Notifications.show('Error fetching component types: ' + Std.string(err), 'error');
+            if (errorCallback != null) errorCallback(err);
+        });
+    }
+
+    // ============ MegaMenu Operations ============
+
+    /** Get a menu by ID via MegaMenu async service */
+    public function getMenuAsync(id:Int, callback:MenuDTO->Void, ?errorCallback:Dynamic->Void):Void {
+        untyped asyncServices.megaMenu.getMenuAsync(id, function(menu:MenuDTO) {
+            callback(menu);
+        }, function(err:Dynamic) {
+            Notifications.show('Error loading menu: ' + Std.string(err), 'error');
+            if (errorCallback != null) errorCallback(err);
+        });
+    }
+
+    /** List all menus via MegaMenu async service */
+    public function listMenusAsync(callback:Array<MenuDTO>->Void, ?errorCallback:Dynamic->Void):Void {
+        untyped asyncServices.megaMenu.listMenusAsync(function(menus:Array<MenuDTO>) {
+            callback(menus);
+        }, function(err:Dynamic) {
+            Notifications.show('Error listing menus: ' + Std.string(err), 'error');
             if (errorCallback != null) errorCallback(err);
         });
     }

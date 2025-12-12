@@ -2,6 +2,7 @@ package cms;
 
 import CmsModels;
 import VisibilityConfig;
+import MegaMenuModels; // for MenuDTO
 import hx.injection.Service;
 
 /**
@@ -25,4 +26,8 @@ interface ICmsManager extends Service {
 
     // Component Types
     public function getComponentTypes(callback:Array<String>->Void, ?errorCallback:Dynamic->Void):Void;
+
+    // MegaMenu
+    public function getMenuAsync(id:Int, callback:MenuDTO->Void, ?errorCallback:Dynamic->Void):Void;
+    public function listMenusAsync(callback:Array<MenuDTO>->Void, ?errorCallback:Dynamic->Void):Void;
 }

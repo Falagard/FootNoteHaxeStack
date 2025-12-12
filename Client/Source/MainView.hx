@@ -11,6 +11,8 @@ import cms.ICmsManager;
 import sidewinder.DI;
 import CmsModels;
 import cms.components.PageListComponent;
+import cms.components.MenuListComponent;
+import cms.MenuEditor;
 import cms.PageEditor;
 
 @:build(haxe.ui.ComponentBuilder.build("Assets/main-view.xml"))
@@ -188,6 +190,13 @@ class MainView extends VBox {
 		};
 
 		contentPlaceholder.addComponent(currentPageList.render());
+
+		// Menus list and editor hook
+		var menuList = new MenuListComponent();
+		menuList.onEditMenu = function(menuId:Int) {
+			showMenuEditor(menuId);
+		};
+		contentPlaceholder.addComponent(menuList.render());
 	}
 	
     /** Show the page editor */
@@ -200,7 +209,16 @@ class MainView extends VBox {
 				currentPageList.loadPages();
 			}
 		};
-		
-		currentEditor.showDialog();
 	}
+
+	/** Show the menu editor */
+	private function showMenuEditor(menuId:Int):Void {
+		var dlg = new MenuEditor();
+		dlg.showDialog();
+		dlg.loadMenu(menuId);
+		dlg.onSaved = function(_) {
+			// Optionally refresh menu list
+		};
+	}
+		
 }

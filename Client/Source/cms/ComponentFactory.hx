@@ -2,6 +2,7 @@ package cms;
 
 import cms.components.*;
 import cms.components.PageListComponent;
+import cms.components.MenuListComponent;
 import CmsModels;
 
 /** Factory for creating page components by type */
@@ -13,6 +14,7 @@ class ComponentFactory {
             case "image": new ImageComponent(id);
             case "button": new ButtonComponent(id);
             case "pagelist": new PageListComponent(id);
+            case "menulist": new MenuListComponent(id);
             default:
                 // Default to text component for unknown types
                 trace('Unknown component type: $type, using TextComponent');
@@ -29,6 +31,6 @@ class ComponentFactory {
     
     /** Get list of available component types */
     public static function getAvailableTypes():Array<String> {
-        return ["text", "image", "button", "pagelist"];
+        return ["text", "image", "button", "pagelist", "menulist"];
     }
 }
