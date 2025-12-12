@@ -70,6 +70,14 @@ class ComponentSchema {
 				lastOutput: "?Dynamic"
 			}
 		}
+		,{
+			type: "pagelist",
+			requiredProps: ["pages"],
+			propsSchema: {
+				pages: "Array<Dynamic>",
+				title: "?String"
+			}
+		}
 	];
 
 	public static function getDefinition(type:String):Null<ComponentDefinition> {
