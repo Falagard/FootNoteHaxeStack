@@ -1,11 +1,14 @@
 {
 	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../Shared"
-		}
-	],
+        {
+            "path": "."
+        },
+        {
+            "path": "../Shared"
+        },
+        {
+            "path": "../Client"
+        }
+    ],
     "settings": {}
 }

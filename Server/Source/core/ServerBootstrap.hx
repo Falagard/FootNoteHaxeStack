@@ -1,0 +1,84 @@
+package core;
+
+import sidewinder.SideWinderServer;
+import sidewinder.SideWinderRequestHandler;
+import hx.injection.ServiceCollection;
+import sidewinder.DI;
+import sidewinder.HybridLogger;
+import sidewinder.CacheService;
+import sidewinder.ICacheService;
+import sidewinder.Database;
+import lime.app.Application;
+import lime.ui.WindowAttributes;
+import lime.ui.Window;
+import sys.net.Host;
+import snake.server.BaseHTTPRequestHandler;
+import sidewinder.Router;
+
+class ServerBootstrap extends Application {
+	public var config:ServerConfig;
+	public var httpServer:SideWinderServer;
+	public var router:Router;
+	public var cache:ICacheService;
+
+	public function new() {
+		super();
+		config = new ServerConfig();
+		// Allow subclasses to modify config before init
+		configure();
+		init();
+	}
+
+	public function configure():Void {
+		// Override in subclass
+	}
+
+	public function init():Void {
+		// Initialize database
+		Database.runMigrations();
+		HybridLogger.init(true);
+
+		// Configure SideWinderRequestHandler
+		BaseHTTPRequestHandler.protocolVersion = config.protocol;
+		SideWinderRequestHandler.corsEnabled = config.corsEnabled;
+		SideWinderRequestHandler.cacheEnabled = config.cacheEnabled;
+		SideWinderRequestHandler.silent = config.silent;
+
+		router = SideWinderRequestHandler.router;
+
+		// DI Initialization
+		DI.init(c -> {
+			c.addSingleton(ICacheService, CacheService);
+			configureServices(c);
+		});
+
+		cache = DI.get(ICacheService);
+
+		// Configure generic middleware/routes
+		configureMiddleware();
+		configureRoutes(router);
+
+		// Start server
+		httpServer = new SideWinderServer(new Host(config.host), config.port, SideWinderRequestHandler, true, config.directory);
+	}
+
+	public function configureServices(services:ServiceCollection):Void {
+		// Override in subclass to register app services
+	}
+
+	public function configureMiddleware():Void {
+		// Override to add middleware usage
+	}
+
+	public function configureRoutes(router:Router):Void {
+		// Override to add custom routes
+	}
+
+	public override function update(deltaTime:Int):Void {
+		httpServer.handleRequest();
+	}
+
+	override public function createWindow(attributes:WindowAttributes):Window {
+		return null;
+	}
+}
