@@ -1,7 +1,7 @@
 package app.util;
 
 import app.models.CmsModels;
-import ComponentSchema;
+import app.util.ComponentSchema;
 import haxe.Json;
 
 class JsonValidator {

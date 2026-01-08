@@ -12,8 +12,9 @@ import lime.app.Application;
 import lime.ui.WindowAttributes;
 import lime.ui.Window;
 import sys.net.Host;
-import snake.server.BaseHTTPRequestHandler;
 import sidewinder.Router;
+import snake.http.BaseHTTPRequestHandler;
+import hx.injection.ServiceType;
 
 class ServerBootstrap extends Application {
 	public var config:ServerConfig;
@@ -48,7 +49,7 @@ class ServerBootstrap extends Application {
 
 		// DI Initialization
 		DI.init(c -> {
-			c.addSingleton(ICacheService, CacheService);
+			c.addService(ServiceType.Singleton, ICacheService, CacheService);
 			configureServices(c);
 		});
 

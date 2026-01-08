@@ -5,6 +5,7 @@ import core.middleware.AuthenticationMiddleware;
 import core.middleware.LoggingMiddleware;
 import core.middleware.BotDetectionMiddleware;
 import hx.injection.ServiceCollection;
+import hx.injection.ServiceType;
 import sidewinder.AutoRouter;
 import sidewinder.DI;
 import sidewinder.Router;
@@ -20,9 +21,9 @@ import app.models.AuthModels.LoginRequest;
 
 class ServerApp extends ServerBootstrap {
 	override public function configureServices(services:ServiceCollection):Void {
-		services.addScoped(IAuthService, AuthService);
-		services.addScoped(ICmsService, CmsService);
-		services.addScoped(IMegaMenuService, MegaMenuService);
+		services.addService(ServiceType.Scoped, IAuthService, AuthService);
+		services.addService(ServiceType.Scoped, ICmsService, CmsService);
+		services.addService(ServiceType.Scoped, IMegaMenuService, MegaMenuService);
 	}
 
 	override public function configureMiddleware():Void {
